@@ -1,0 +1,10 @@
+
+node_modules/
+dist/
+.env
+contents/
+build/
+code
+HMSAdmin.zip
+hospital/public/models/
+build/models/

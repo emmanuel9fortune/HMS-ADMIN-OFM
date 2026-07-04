@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "./static/css/main.d5996107.css",
+    "main.js": "./static/js/main.ae210cbf.js",
+    "static/js/977.dcd39eed.chunk.js": "./static/js/977.dcd39eed.chunk.js",
+    "static/js/732.45ba4ad0.chunk.js": "./static/js/732.45ba4ad0.chunk.js",
+    "static/js/453.cd155de4.chunk.js": "./static/js/453.cd155de4.chunk.js",
+    "static/media/Montserrat.ttf": "./static/media/Montserrat.4df14eb5e72bf55c4497.ttf",
+    "static/media/Nunito.ttf": "./static/media/Nunito.c0f0807a40aebdc41b40.ttf",
+    "static/media/Oswald.ttf": "./static/media/Oswald.7cecd0da606d25b0905d.ttf",
+    "static/media/chime.dat": "./static/media/chime.15e688cc1b764bea256b.dat",
+    "static/media/logo.jpg": "./static/media/logo.51367b74ded51449fb85.jpg",
+    "index.html": "./index.html",
+    "main.d5996107.css.map": "./static/css/main.d5996107.css.map",
+    "main.ae210cbf.js.map": "./static/js/main.ae210cbf.js.map",
+    "977.dcd39eed.chunk.js.map": "./static/js/977.dcd39eed.chunk.js.map",
+    "732.45ba4ad0.chunk.js.map": "./static/js/732.45ba4ad0.chunk.js.map",
+    "453.cd155de4.chunk.js.map": "./static/js/453.cd155de4.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d5996107.css",
+    "static/js/main.ae210cbf.js"
+  ]
+}

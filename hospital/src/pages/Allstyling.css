@@ -1,0 +1,1039 @@
+/* DASHBOARD RESULT CARD */
+.recentpatient_dashCard_container {
+    padding: 1rem;
+}
+.Dashboardresultcard {
+    margin-top: 2rem;
+}
+
+/* RECENT PATIENT DASH CARD */
+.recentpatientdashcard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #c3c3c33a;
+    border: 0.3px solid #c3c3c360;
+    margin: 1rem 0;
+    padding: 0.8rem 1rem;
+    border-radius: 0.2rem;
+    position: relative;
+}
+.card_icon_{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+}
+.card_option_overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #e9e9e911;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+.card_option{
+    position: absolute;
+    top: -80px;
+    right: 5px;
+    cursor: pointer;
+    background-color: #FFF;
+    padding: 5px;
+    z-index: 10000;
+    border: .3px solid #c3c3c3;
+    border-radius: 5px;
+    width: 150px;
+}
+.card_option>div>h4{
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    background-color: #c3c3c33a;
+}
+.Patientqueuecard_button button {
+    padding: 0.5rem 1rem;
+}
+.dashboard_body h3 {
+    margin-top: 2rem;
+}
+.searchresultcard_view {
+    margin-right: 1rem;
+    color: #fff;
+    background-color: #0463ca;
+    border: none;
+}
+.searchresultcard_view2 {
+    color: #fff;
+    background-color: #0463ca;
+    border: none;
+}
+.searchresultcard_view1 {
+    color: #0463ca;
+    background-color: #FFF;
+    border: .3px solid #0463ca;
+}
+.searchresultcard_view2:hover {
+    color: #0463ca;
+    background-color: #fff;
+    border: 0.3px solid #0463ca;
+}
+.payment_desk{
+    border: .3px solid #c3c3c359;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.payment_desk>h3{
+    position: absolute;
+    top: 0;
+    left: 20px;
+    width: 100%;
+}
+.payment_desk_input_fields{
+    width: 47%;
+    height: 80%;
+}
+.payment_desk_input>input{
+    margin: 10px 0;
+    padding: 15px;
+    width: 100%;
+    border-radius: 5px;
+    border: .3px solid #c3c3c3;
+}
+.payment_desk_select_fields{
+    width: 100%;
+    display: flex;
+    margin: 20px 0;
+}
+.payment_desk_select_fields>h4{
+    width: 50%;
+    text-align: center;
+    border: .3px solid #c3c3c3;
+    padding:  15px 0;
+    cursor: pointer;
+}
+.payment_desk_select_fields>h4:hover{
+    background-color: #0463ca;
+    color: #fff;
+}
+.payment_desk_input_result{
+    width: 100%;
+    height: 280px;
+    background-color: #f8f8f8;
+    border: .3px solid #c3c3c3;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: scroll;
+}
+.payment_desk_input_result>p{
+    width: 95%;
+    padding: 10px 7px;
+    margin: 3px 0;
+    background-color: #fff;
+    border: .3px solid #c3c3c3;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.payment_desk_input_result::-webkit-scrollbar-thumb{
+    background-color: #0463ca;
+}
+.payment_desk_input_result::-webkit-scrollbar-button{
+    background-color: #0463ca;
+}
+.payment_desk_input_result::-webkit-scrollbar{
+    width: 5px;
+    background-color: #e8e8e8;
+}
+.payment_desk_input_fields_btn{
+    width: 100%;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+}
+.payment_desk_input_fields_btn1{
+    padding: 15px 0;
+    margin: 20px 0;
+    width: 100px;
+    cursor: pointer;
+    font-size: 18px;
+}
+.payment_desk_input_fields_btn2{
+    padding: 15px 0;
+    cursor: pointer;
+    background-color: #0463ca;
+    color: #fff;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+}
+.payment_desk_input_result_details{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 5x 0;
+}
+.payment_desk_input_result_details>div{
+    width: 50%;
+}
+.payment_desk_input_result_details>div>h4{
+    margin: 10px 0;
+}
+.payment_desk_input_result_details>div>input{
+    width: 95%;
+    padding: 15px;
+    border-radius: 5px;
+    border: .3px solid #c3c3c3;
+}
+.payment_desk_input_result_details>div>p{
+    margin: 5px 0;
+    font-size: 23px;
+    font-weight: 700;
+}
+.payment_desk_cart_fields{
+    width: 48%;
+    height: 80%;
+    padding: 0 30px;
+    overflow-y: scroll;
+}
+.payment_desk_cart_fields::-webkit-scrollbar-thumb{
+    background-color: #0463ca;
+}
+.payment_desk_cart_fields::-webkit-scrollbar-button{
+    background-color: #0463ca;
+}
+.payment_desk_cart_fields::-webkit-scrollbar{
+    width: 5px;
+    background-color: #e8e8e8;
+}
+
+.payment_desk_cart_fields_slides{
+    width: 100%;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 10px;
+    border: .3px solid #c3c3c3;
+    border-radius: 5px;
+}
+.payment_desk_cart_fields_slides>div>p{
+    margin: 5px 0;
+}
+.payment_desk_cart_fields_slides>div>button{
+    padding: 10px;
+    background-color: red;
+    border-radius: 999px;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+
+/* PATIENT RECORDS */
+.patient_details_{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 60px 0;
+}
+
+.patient_details_input_field1{
+    width: 50%;
+    padding: 0 10px;
+}
+
+.patient_details_input_field1_>h4{
+    margin: 5px 0;
+}
+
+.patient_details_input_field1_>input{
+    width: 100%;
+    padding: 15px;
+}
+
+.patient_details_input_field1_>select{
+    width: 100%;
+    padding: 15px;
+}
+
+.patient_details_input_field1_in{
+    width: 50%;
+    padding: 0 10px;
+    margin: 10px 0;
+}
+
+.patient_details_input_field1_in1{
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.patient_details_input_field1_in>h4{
+    margin: 5px 0;
+}
+
+.patient_details_input_field1_in>input{
+    width: 100%;
+    padding: 15px;
+}
+
+.patient_details_input_field1_>textarea{
+    padding: 15px;
+}
+
+.patient_details_input_field1_in_{
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.changes_count{
+    position: absolute;
+    top: 30px;
+    right: 50px;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #fff;
+    border: .3px solid #0463ca;
+    border-radius: 5px;
+}
+
+.changes_count>p{
+    margin: 0 10px;
+    font-weight: 700;
+}
+.changes_count>button{
+    padding: 10px 15px;
+    background-color: #0463ca;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+.previouse_medicals_checkbox{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+}
+.previouse_medicals_checkbox_text{
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 5px;
+}
+
+.previouse_medicals_checkbox_text>h4{
+    margin: 5px 0;
+}
+
+.previouse_medicals_checkbox_text>div{
+    display: flex;
+    align-items: center;
+}
+.previouse_medicals_checkbox_text>div>div{
+    display: flex;
+    align-items: center;
+    margin: 0 5px;
+}
+.previouse_medicals_checkbox_text>div>div>p{
+    margin: 0 5px;
+}
+
+.patient_details_input_field1_operations{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+.patient_details_input_field1_operations>div{
+    width: 32%;
+}
+.custome_table{
+    width: 100%;
+    border-collapse: collapse;
+    border: .3px solid #c3c3c3;
+    margin: 0 0 30px 0;
+}
+.custome_table_guide{
+    margin: 30px 0 10px 0;
+}
+.custome_table th,
+.custome_table td{
+    border: .3px solid #c3c3c3;
+    padding: 8px;
+}
+.custome_table td{
+    height: 200px;
+}
+.custome_table1 th,
+.custome_table1 td{
+    border: .3px solid #c3c3c3;
+    padding: 8px;
+}
+.custome_table1 td{
+    height: auto;
+}
+.custome_table td input{
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    outline-width: 0;
+    background-color: #c3c3c33a;
+}
+.custome_table td p{
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    outline-width: 0;
+}
+.custome_table1 td p{
+    width: 100%;
+    height: fit-content;
+    background-color: transparent;
+    border: none;
+    outline-width: 0;
+}
+.custome_table td textarea{
+    width: 250px;
+    height: 200px;
+    background-color: transparent;
+    border: none;
+    outline-width: 0;
+    resize: none;
+}
+.custome_table td select{
+    width: 100%;
+    height: 200px;
+    background-color: transparent;
+    border: none;
+    outline-width: 0;
+}
+.custome_table_btn{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 20px 0 40px 0;
+    justify-content: space-between;
+}
+.custome_table_btn1{
+    width: 100px;
+    padding: 15px;
+}
+.custome_table_btn2{
+    width: 180px;
+    padding: 15px;
+    background-color: #0463ca;
+    color: #fff;
+    border: none;
+}
+.previouse_medicals_textareas{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.previouse_medicals_textareas>div>div>textarea{
+    width: 100%;
+    height: 400px;
+    border: .3px solid #c3c3c359;
+    resize: none;
+}
+.patient_details_input_field1_>textarea{
+    width: 100%;
+    height: 400px;
+    border: .3px solid #c3c3c359;
+    resize: none;
+}
+.previouse_medicals_textareas>div>textarea{
+    width: 800px;
+    height: 400px;
+    border: .3px solid #c3c3c359;
+    resize: none;
+}
+.patient_details_input_field1>H3{
+    margin: 15PX 0;
+}
+
+
+
+
+/* ADD NEW PATIENTS */
+
+.add_new_patient_container{
+    width: 550px;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.add_new_patient_container>h2{
+    margin: 30px 0;
+}
+.add_new_patient_container_btns{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 50px 0;
+}
+.add_new_patient_container_btns>button{
+    width: 49%;
+    padding: 15px;
+    font-size: 18px;
+    cursor: pointer;
+}
+.add_new_patient_container_btns1{
+    border: .4px solid #0463ca;
+    color: #0463ca;
+    border-radius: 5px;
+    background-color: transparent;
+}
+.add_new_patient_container_btns2{
+    background-color: #0463ca;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+}
+.back_btn_{
+    width: 100px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 20px;
+    background-color: #fff;
+    color: #0463ca;
+    padding: 12px;
+    border-radius: 999px;
+    border: .4px solid #0463ca;
+}
+.regular_patient_input{
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+}
+.regular_patient_input>h3{
+    margin: 10px 0;
+}
+.regular_patient_input>input{
+    padding: 15px;
+}
+.previouse_medicals_textareas_NOTE{
+    margin: 0 10px;
+}
+.previouse_medicals_textareas_NOTE>div>textarea{
+    width: 100%;
+    height: 550px;
+    padding: 15px;
+}
+
+
+
+/* nurse */
+
+.note_container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.note_container>textarea{
+    flex: 1;
+    margin: 0 0 10px 0;
+    resize: none;
+    outline-color: #0463ca;
+    padding: 15px;
+}
+.note_container>div{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.note_container>div>button{
+    width: 150px;
+    padding: 15px;
+    margin: 0 10px 10px 0;
+    border: none;
+    background-color: #0463ca;
+    color: #fff;
+    border-radius: 20px;
+    font-size: 17px;
+}
+
+.upload_scan_btn{
+    width: 100%;
+    padding: 15px;
+    margin: 0 10px 10px 0;
+    border: none;
+    background-color: #0463ca;
+    color: #fff;
+    border-radius: 20px;
+    font-size: 17px;
+}
+
+/* lab */
+.lab_result_container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+.lab_result_header{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0;
+}
+.lab_result_header>div{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.lab_result_header>div>div{
+    width: 50%;
+    padding: 20px 10px;
+    border: .3px solid #c3c3c3;
+    display: flex;
+    align-items: center;
+}
+.lab_result_header>div>div>p{
+    margin: 0 5px;
+}
+.lab_result_address{
+    width: 100%;
+    padding: 20px 10px;
+    border: .3px solid #c3c3c3;
+    display: flex;
+}
+.lab_result_container_{
+    width: 100%;
+}
+.notification_bar{
+    height: 350px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: .3px solid #c3c3c359;
+    overflow-y: scroll;
+}
+.labdash{
+    display: flex;
+    align-items: normal;
+}
+.notification_bar::-webkit-scrollbar-thumb{
+    background-color: #0463ca;
+}
+.notification_bar::-webkit-scrollbar-button{
+    background-color: #0463ca;
+}
+.notification_bar::-webkit-scrollbar{
+    width: 5px;
+    background-color: #e8e8e8;
+}
+
+
+.dashboard_body_patient_details_btns{
+    width: 100%;
+    margin: 20px 0;
+}
+.dashboard_body_patient_details_btns>button{
+    padding: 20px 10px;
+    width: 200px;
+    border: .3px solid #c3c3c359;
+}
+.dashboard_body_patient_details_btns_{
+    padding: 20px 10px;
+    width: 200px;
+    border: none;
+    background-color: #0463ca;
+    color: #fff;
+}
+.Patientqueuecard_button{
+    display: flex;
+    align-items: center;
+}
+.Patientqueuecard_button>h4{
+    margin: 0 15px;
+}
+.drug_top_label{
+    width: 95%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+/* admin */
+.admin_dashboard_boxes{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 30px 0 10PX 0;
+}
+.admin_dashboard_body{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+.admin_dashboard_box{
+    width: 24%;
+    height: 200px;
+    border: .3px solid #c3c3c359;
+    padding: 20px 15px;
+    border-radius: 10px;
+    background-color: #FFF;
+}
+.admin_dashboard_box>h2{
+    margin-top: 20px;
+}
+.admin_dashboard_body_box{
+    width: 33%;
+    padding: 15px;
+    border-radius: 10px;
+    background-color:#fff
+}
+.admin_dashboard_body_box>div{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+.add_staff_contaimer{
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.add_staff_contaimer>.patient_details_input_field1_{
+    width: 100%;
+    margin: 5PX 0;
+}
+.add_staff_contaimer_button{
+    margin: 20px 0;
+    padding: 15px 0;
+    width: 100%;
+    font-size: 17px;
+    background-color: #0463ca;
+    color: #FFF;
+    border: none;
+}
+.add_staff_contaimer>label{
+    width: 150px;
+    height: 150px;
+}
+
+.add_staff_contaimer>label>img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.add_utilities{
+    margin: 0 10px;
+}
+.display_all_utilities{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 15px 0;
+    justify-content: space-between;
+}
+
+.display_all_utilities>div{
+    width: 48%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 5px 10px;
+    border: .3px solid #c3c3c359;
+    border-radius: 5px;
+}
+.display_all_utilities>div>img{
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+}
+.display_all_utilities_contianer{
+    width: 100%;
+    height: 60%;
+    overflow-y: scroll;
+}
+.display_all_utilities_contianer::-webkit-scrollbar-thumb{
+    background-color: #0463ca;
+}
+.display_all_utilities_contianer::-webkit-scrollbar-button{
+    background-color: #0463ca;
+}
+.display_all_utilities_contianer::-webkit-scrollbar{
+    width: 5px;
+    background-color: #e8e8e8;
+}
+
+.delete_btn{
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: red;
+    color: #FFF;
+    padding: 10px;
+}
+
+.popt_request{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 10000;
+    background-color: #c3c3c33a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.popt_request>.pop_up_request_display{
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    height: 550px;
+    border-radius: 10px;
+    z-index: 20000;
+}
+
+.popt_request>.pop_up_request_display>select{
+    width: 80%;
+    padding: 15px;
+    margin: 15px;
+}
+
+.pop_up_request_display>textarea{
+    width: 80%;
+    margin: 15px;
+    padding: 15px;
+    border-radius: 5px;
+    height: 250px;
+    resize: none;
+}
+.popt_request>.pop_up_request_display>button{
+    width: 80%;
+    padding: 15px;
+    margin: 10px 0;
+}
+.over_lay_pop_up{
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    position: absolute;
+}
+.make_request>div{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ADD_Cart_btn{
+    padding: 15px;
+    background-color: goldenrod;
+    color: white;
+    border: none;
+}
+
+.cart_container_body{
+    width: 100%;
+    display: flex;
+}
+
+.cart_container{
+    width: 70%;
+}
+
+.cart_checkout{
+    width: 30%;
+    height: 90vh;
+    border: .3px solid #c3c3c3;
+    border-radius: 20px;
+    padding: 20px 10px;
+    position: relative;
+}
+.cart_checkout>.patient_details_input_field1_{
+    position: relative;
+}
+.cart_checkout_pateint_confirm{
+    position: absolute;
+    top: 100px;
+    height: 300px;
+    width: 100%;
+    background-color: #fff;
+    overflow-y: scroll;
+    padding: 10px;
+}
+
+.cart_checkout_pateint_confirm::-webkit-scrollbar-thumb{
+    background-color: #0463ca;
+}
+.cart_checkout_pateint_confirm::-webkit-scrollbar-button{
+    background-color: #0463ca;
+}
+.cart_checkout_pateint_confirm::-webkit-scrollbar{
+    width: 5px;
+    background-color: #e8e8e8;
+}
+.cart_checkout>button{
+    width: 100%;
+    margin: 40px 0;
+}
+.cart_checkout_price{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.cart_checkout_pateint_confirm>div{
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0;
+    cursor: pointer;
+    background-color: #c3c3c33a;
+}
+
+.payment_desk_checkout{
+    width: 100%;
+    margin: 30px 0;
+    padding: 20px 10px;
+    background-color: #c3c3c33a;
+}
+
+.payment_cards{
+    border: 1.3px solid #c3c3c3;
+    margin: 30px 0;
+    padding: 20px 10px;
+    background-color: #c3c3c33a;
+}
+
+.scan_images{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.scan_images>img{
+    width: 25%;
+    margin: 5px;
+    height: 200px;
+}
+
+.psyment_desk_history{
+    padding: 5px 10px;
+    background-color: #e8e8e8;
+    display:flex;
+    align-items:center;
+    width:100%;
+}
+
+.staff_info_display{
+    width:90%;
+    display:flex;
+    align-items:center;
+    text-transform:capitalize
+}
+.staff_info_display>img{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    margin: 5px
+}
+
+.test_nurse{
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+input{
+  font-size: 21px;
+}
+
+textarea{
+  font-size: 21px;
+}
+
+.pop_up_request_display1{
+    width: 70%;
+    height: 800px;
+}
+
+.pop_up_request_display1>img{
+    width: 100%;
+    height: 100%;
+}
+
+.recentpatientdashcard_desc>select,
+.recentpatientdashcard_desc>input{
+    width: 120px;
+    padding: 10px;
+}
+
+.lab_result_container_{
+    background-color: #06b36b;
+    padding: 20px 10px;
+}
+
+.lab_result_container_l{
+    width: 100%;
+    margin: 20px 0;
+}
+
+.lab_result_container_>h2,
+.lab_result_container_>h4{
+    color: #fff;
+}
+
+.lab_result_container_ table p{
+    font-size: 20px;
+}
+
+.prescribe_container{
+    background-color: #06b36b;
+    padding: 10px 15px;
+    margin: 15px 0;
+}
+
+.notification_cards{
+    background-color: #c3c3c33a;
+    margin: 7px 0;
+}
+
+.lab_result_header>div>div{
+    background-color: #ffffff2f;
+}
+
+.lab_result_container_>table{
+    background-color: #ffffff2f;
+}
