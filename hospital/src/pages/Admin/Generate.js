@@ -17,7 +17,8 @@ export const generatePaymentReportPDF = (
   churchTotal,
   income,
   expense,
-  profit
+  profit,
+  status
 ) => {
   // === Currency formatter (inside or outside, both fine) ===
   const formatted = new Intl.NumberFormat("en-NG", {
@@ -68,11 +69,15 @@ export const generatePaymentReportPDF = (
     doc.text(`Total Income Made ${safeCurrency(docTotal)}`, 40, yPos);
   } else {
     // Default totals for all
-    doc.text(`Total Income Made ${safeCurrency(income)}`, 40, yPos);
-    doc.setTextColor(200, 0, 0);
-    doc.text(`Total Expenses ${safeCurrency(expense)}`, 300, yPos);
-    doc.setTextColor(0, 100, 0);
-    doc.text(`Total Profit ${safeCurrency(profit)}`, 520, yPos);
+    if(status !== 'DEBTORS'){
+      doc.text(`Total Income Made ${safeCurrency(income)}`, 40, yPos);
+      doc.setTextColor(200, 0, 0);
+      doc.text(`Total Expenses ${safeCurrency(expense)}`, 300, yPos);
+      doc.setTextColor(0, 100, 0);
+      doc.text(`Total Profit ${safeCurrency(profit)}`, 520, yPos);
+    }else{
+      doc.text(`Total Debt ${safeCurrency(income)}`, 40, yPos);
+    }
   }
 
   // === Separator line ===
@@ -114,7 +119,7 @@ export const generatePaymentReportPDF = (
         amount = getBill?.totalPrice || getBill?.items?.[0]?.totalPrice || 0;
       }
 
-      const mode = item?.mode || "";
+      const mode = status !== 'DEBTORS' ? item?.mode || "" : "";
 
       if (
         sortType === "" ||

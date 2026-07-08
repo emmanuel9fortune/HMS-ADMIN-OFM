@@ -6,7 +6,6 @@ import { FaSearch } from 'react-icons/fa'
 function AddAntenatal() {
     const [utilities, setutilities] = useState([])
       const [reload, setreload] = useState(0)
-      const [suscript, setsuscript] = useState('')
       const cip = window.location.hostname
     
       useEffect(()=>{
@@ -30,7 +29,6 @@ function AddAntenatal() {
       },[reload, cip])
       
       const [name, setname] = useState('')
-      const [duration, setduration] = useState('')
       
       const handleDelete =async(id)=>{
         try {
@@ -47,9 +45,7 @@ function AddAntenatal() {
       const handleAddUSubscription =async()=>{
     
         const value ={
-          name,
-          suscript,
-          duration,
+          name
         }
     
         try {
@@ -103,22 +99,8 @@ function AddAntenatal() {
     <div className='payment_desk'>
         <div className='payment_desk_input_fields add_utilities'>
             <div className='patient_details_input_field1_' >
-                <h4>SELECT ANTENATAL SUBSCRIPTION</h4>
-                <select value={suscript} onChange={(e)=> setsuscript(e.target.value)}>
-                    <option value={''}>SELECT PACKAGE TYPE</option>
-                    <option value={'BASIC PACKAGE'}>BASIC PACKAGE</option>
-                    <option value={'SILVER PACKAGE'}>SILVER PACKAGE</option>
-                    <option value={'GOLD PACKAGE'}>GOLD PACKAGE</option>
-                </select>
-            </div>
-            <div className='patient_details_input_field1_' >
-                <h4>PACKAGE NAME</h4>
+                <h4>CATALOGUE NAME</h4>
                 <input value={name} onChange={(e)=>setname(e.target.value)} placeholder='Enter Package Name' />
-            </div>
-
-            <div className='patient_details_input_field1_' >
-                <h4>DURATION</h4>
-                <input value={duration} onChange={(e)=>setduration(e.target.value)} placeholder='Enter Duration Name' />
             </div>
             
             {
@@ -131,7 +113,7 @@ function AddAntenatal() {
 
         
         <div className='payment_desk_input_fields add_utilities' >
-            <h4>RECENTLY ADDED DIAGNOSIS</h4>
+            <h4>RECENTLY ADDED CATALOGUE</h4>
             <div className='display_all_utilities_contianer'>
             <div className='dashboard_body_header_search'>
                 <FaSearch/>
@@ -141,11 +123,9 @@ function AddAntenatal() {
                 {
                     search?.length > 0 ?
                     search?.map((srch, i)=>(
-                        <div key={i} >
+                        <div key={i} style={{padding:'15px'}}>
                         <div>
                             <p>Name: {srch?.name}</p>
-                            <p>Type: {srch?.suscript}</p>
-                            <p>Duration: {srch?.duration}</p>
                         </div>
                         <button onClick={()=>handleDelete(srch?._id)} >DELETE</button>
                         </div>
@@ -154,11 +134,9 @@ function AddAntenatal() {
                 utilities?.length > 0 ?
                     utilities?.map((cat, i)=>{
                     return(
-                    <div key={i} >
+                    <div key={i} style={{padding:'15px'}}>
                     <div>
                         <p>Name: {cat?.name}</p>
-                        <p>Type: {cat?.suscript}</p>
-                        <p>Duration: {cat?.duration}</p>
                     </div>
                     <button onClick={()=>handleDelete(cat?._id)} >DELETE</button>
                     </div>

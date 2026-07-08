@@ -536,19 +536,19 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         console.log(status);
         
         if(status === 'PAID'){
-           return generatePaymentReportPDF(getComplete, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income, expense, profit);
+           return generatePaymentReportPDF(getComplete, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income, expense, profit, status);
         }
         
         if(status === 'PENDING'){
-           return generatePaymentReportPDF(pending, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income1, expense1, profit1);
+           return generatePaymentReportPDF(pending, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income1, expense1, profit1, status);
         }
         
         if(status === 'AWAITING'){
-            return generatePaymentReportPDF(awaiting, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income2, expense2, profit2);
+            return generatePaymentReportPDF(awaiting, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income2, expense2, profit2, status);
         }
         
         if(status === 'DEBTORS'){
-            return generatePaymentReportPDF(debtors, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income2, expense2, profit2);
+            return generatePaymentReportPDF(debtors, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, totalPrice3, expense2, profit2, status);
         }
     };
     
@@ -785,21 +785,21 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                         : null
                     }
                     {   status === 'DEBTORS' ?
-                        sort === 'cards' ?
-                            <h4>Total Income Made {totalFormatted.format(cardTotal3)}</h4>
-                        : sort === 'consultation' ?
-                            <h4>Total Income Made {totalFormatted.format(consultationTotal3)}</h4>
-                        : sort === 'drugs' ?
-                            <h4>Total Income Made {totalFormatted.format(othersTotal3)}</h4>
-                        : sort === 'utils' ?
-                            <h4>Total Income Made {totalFormatted.format(utilsTotal3)}</h4>
-                        : sort === 'consumables' ?
-                            <h4>Total Income Made {totalFormatted.format(consumeTotal3)}</h4>
-                        : sort === 'drugs' ?
-                            <h4>Total Income Made {totalFormatted.format(docTotal3)}</h4>
-                        : <div style={{width:'100%', display:'flex', alignItems:'center'}}>
-                            <h4 style={{margin:'0 10px'}}>Total In Pharmacy {totalFormatted.format(totalPrice3)}</h4>
-                        </div>
+                            sort === 'cards' ?
+                                <h4>Total Card debt {totalFormatted.format(cardTotal3)}</h4>
+                            : sort === 'consultation' ?
+                                <h4>Total consultation debt {totalFormatted.format(consultationTotal3)}</h4>
+                            : sort === 'drugs' ?
+                                <h4>Total drugs debt {totalFormatted.format(othersTotal3)}</h4>
+                            : sort === 'utils' ?
+                                <h4>Total utils debt {totalFormatted.format(utilsTotal3)}</h4>
+                            : sort === 'consumables' ?
+                                <h4>Total consumables debt {totalFormatted.format(consumeTotal3)}</h4>
+                            : sort === 'drugs' ?
+                                <h4>Total drugs debt {totalFormatted.format(docTotal3)}</h4>
+                            : <div style={{width:'100%', display:'flex', alignItems:'center'}}>
+                                <h4 style={{margin:'0 10px'}}>Total Debt {totalFormatted.format(totalPrice3)}</h4>
+                            </div>
                         : null
                     }
                 </div>   
@@ -1709,7 +1709,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))}
                                                             </td>
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                            {/* <td><p>{item?.mode}</p></td> */}
+                                                            <td><p></p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
@@ -1726,7 +1727,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))}
                                                             </td>
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                            {/* <td><p>{item?.mode}</p></td> */}
+                                                            <td><p></p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
@@ -1743,7 +1745,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))}
                                                             </td>
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                            {/* <td><p>{item?.mode}</p></td> */}
+                                                            <td><p></p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
@@ -1760,7 +1763,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))}
                                                             </td>
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                            {/* <td><p>{item?.mode}</p></td> */}
+                                                            <td><p></p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
@@ -1777,7 +1781,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))}
                                                             </td>
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                            {/* <td><p>{item?.mode}</p></td> */}
+                                                            <td><p></p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
@@ -1794,7 +1799,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))}
                                                             </td>
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                            {/* <td><p>{item?.mode}</p></td> */}
+                                                            <td><p></p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
@@ -1811,7 +1817,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))}
                                                             </td>
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                            {/* <td><p>{item?.mode}</p></td> */}
+                                                            <td><p></p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
@@ -1828,7 +1835,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))}
                                                             </td>
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                            {/* <td><p>{item?.mode}</p></td> */}
+                                                            <td><p></p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
@@ -1880,7 +1888,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                             }
                                                         </td>
                                                         <td><p>{formatted5}</p></td>
-                                                        <td><p>{item?.mode}</p></td>
+                                                        {/* <td><p>{item?.mode}</p></td> */}
+                                                        <td><p></p></td>
                                                     </tr>
                                                 </tbody>
                                             ) 
@@ -1931,7 +1940,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                             </div>
                                                         </td>
                                                         <td><p>{formatted5}</p></td>
-                                                        <td><p>{item?.mode}</p></td>
+                                                        {/* <td><p>{item?.mode}</p></td> */}
+                                                        <td><p></p></td>
                                                     </tr>
                                                 </tbody>
                                             )  
