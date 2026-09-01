@@ -88,7 +88,7 @@ importers:
         version: 8.21.3
     devDependencies:
       electron:
-        specifier: ^35.1.5
+        specifier: ^35.7.5
         version: 35.7.5
       electron-builder:
         specifier: ^26.0.12

@@ -14,7 +14,8 @@ function NurseBar() {
     const ip = useSelector(selectip)
     const getStaffInfo = sessionStorage.getItem('staffID')
     const jsoninfo = JSON.parse(getStaffInfo)
-        const navigate = useNavigate()
+    const navigate = useNavigate()
+    const app_name = process.env.REACT_APP_NAME
         
     
     const handleLogOut =async()=>{
@@ -50,7 +51,7 @@ function NurseBar() {
     <div className='sidebar_container'>
         <div className='sidebar_logo'>
             <img src={logo} alt='' />
-            <h3>O.F.M. Medical Centre</h3>
+            <h3>{app_name}</h3>
         </div>
             
         <Link to='/handoff' style={{marginTop:'40px'}} className='sidebar_links'>

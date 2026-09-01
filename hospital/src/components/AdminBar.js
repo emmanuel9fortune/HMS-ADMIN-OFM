@@ -10,6 +10,7 @@ function AdminBar() {
 
     const log = localStorage.getItem('log')
     const getvalues =JSON.parse(log)
+    const app_name = process.env.REACT_APP_NAME
 
     const handleLogOut =()=>{
         localStorage.setItem('log', JSON.stringify({key: getvalues?.key, set: false}))
@@ -20,7 +21,7 @@ function AdminBar() {
       <div className='sidebar_container'>
           <div className='sidebar_logo'>
               <img src={logo} alt='' />
-              <h3>O.F.M. Medical Centre</h3>
+              <h3>{app_name}</h3>
           </div>
   
           <Link to='/addstaff' style={{marginTop:'40px'}} className='sidebar_links'>
