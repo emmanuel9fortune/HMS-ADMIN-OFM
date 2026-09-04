@@ -72,8 +72,14 @@ router.post('/', async (req, res) => {
 
     // Status
     if (status) {
-      patientQuery.status = status;
-    }
+      if(status === 'outpatient'){
+        patientQuery.status = {
+          $in: ['nurse', 'doctor', 'pharmacy', 'cashier']
+        };
+      }else{
+        patientQuery.status = status;
+      }
+    } 
 
     // Get patients from database
     let patients = await Patient.find(patientQuery);
@@ -232,8 +238,14 @@ router.post('/day', async (req, res) => {
 
     // STATUS
     if (status) {
-      patientQuery.status = status;
-    }
+      if(status === 'outpatient'){
+        patientQuery.status = {
+          $in: ['nurse', 'doctor', 'pharmacy', 'cashier']
+        };
+      }else{
+        patientQuery.status = status;
+      }
+    } 
 
     let patients = await Patient.find(patientQuery);
 
@@ -399,8 +411,14 @@ router.post('/month', async (req, res) => {
     }
 
     if (status) {
-      patientQuery.status = status;
-    }
+      if(status === 'outpatient'){
+        patientQuery.status = {
+          $in: ['nurse', 'doctor', 'pharmacy', 'cashier']
+        };
+      }else{
+        patientQuery.status = status;
+      }
+    } 
 
     let patients = await Patient.find(patientQuery);
 
@@ -538,8 +556,14 @@ router.post('/year', async (req, res) => {
     }
 
     if (status) {
-      patientQuery.status = status;
-    }
+      if(status === 'outpatient'){
+        patientQuery.status = {
+          $in: ['nurse', 'doctor', 'pharmacy', 'cashier']
+        };
+      }else{
+        patientQuery.status = status;
+      }
+    } 
 
     let patients = await Patient.find(patientQuery);
 

@@ -8,6 +8,8 @@ router.post('/', async (req, res) => {
   try {
     const { uid, staffid, note } = req.body;
 
+    
+
     if (!uid || !staffid || !note) {
       return res.json({ message: 'uid, staffid, and note are required' });
     }

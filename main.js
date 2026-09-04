@@ -675,13 +675,6 @@ app.commandLine.appendSwitch(
 app.whenReady().then(() => {
     createWindow();
     createServer();
-        
-    const notification = new Notification({
-        title: 'O.F.M. Medical center',
-        body: 'Nurses dashboard display'
-    });
-    notification.onclick = () => {};
-    notification.show();
 });
 
 app.on('activate', () => {

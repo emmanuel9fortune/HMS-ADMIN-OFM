@@ -282,7 +282,7 @@ function PatientStatistics() {
                >
                 <option value={''}>SELECT GROUP</option>
                 <option value={'outpatient'}>OUTPATIENT</option>
-                <option value={'inpatient'}>INPATIENT</option>
+                <option value={'admitted'}>INPATIENT</option>
                 <option value={'emergency'}>EMERGENCY</option>
               </select>
             </div>
@@ -387,10 +387,9 @@ function PatientStatistics() {
                                 <td><p>{timeString}, {`${day}-${month}-${year}`}</p></td>
                                 <td><p>{item?.sex}</p></td>
                                 <td><p>{item?.age} {item?.AgeType}</p></td>
+                                <td><p>{item?.status === 'admitted' ? "inpatient" : item?.status}</p></td>
                                 <td><p>{item?.name}</p></td>
                                 <td><p>{item?.address}</p></td>
-                                <td><p>{item?.name}</p></td>
-                                <td><p>{item?.type}</p></td>
                             </tr>
                         </tbody>
                     )
