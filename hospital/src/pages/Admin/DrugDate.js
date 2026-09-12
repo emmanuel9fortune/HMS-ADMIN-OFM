@@ -748,41 +748,6 @@ function DrugDate() {
             </select>
           </div>
 
-          {/* SERVICE / TYPE */}
-
-          <div
-            className="patient_details_input_field1_"
-            style={{ margin: '0 5px' }}
-          >
-
-            <h4>SERVICE TYPE</h4>
-
-            <select
-              value={sort}
-              onChange={(e) =>
-                setsort(e.target.value)
-              }
-            >
-
-              <option value="">
-                ALL SERVICES
-              </option>
-
-              <option value="drugs">
-                DRUGS
-              </option>
-
-              <option value="utils">
-                UTILITY
-              </option>
-
-              <option value="consumable">
-                CONSUMABLE
-              </option>
-
-            </select>
-
-          </div>
 
 
           {/* BATCH */}
