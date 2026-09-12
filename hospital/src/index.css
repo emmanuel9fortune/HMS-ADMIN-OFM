@@ -60,3 +60,258 @@ h4{
   }
 }
 
+/* ============================================================
+   MANAGEMENT SUMMARY
+============================================================ */
+
+.management_summary {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+}
+
+
+/* ============================================================
+   SUMMARY CARD
+============================================================ */
+
+.management_summary_card {
+    position: relative;
+    min-width: 0;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e6e8ec;
+    border-radius: 12px;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* subtle top accent */
+
+.management_summary_card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #111827;
+}
+
+
+/* hover */
+
+.management_summary_card:hover {
+    transform: translateY(-2px);
+    border-color: #d5d9df;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ============================================================
+   CARD TITLE
+============================================================ */
+
+.management_summary_card h4 {
+    margin: 0 0 14px 0;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    color: #6b7280;
+}
+
+
+/* ============================================================
+   MAIN VALUE
+============================================================ */
+
+.management_summary_card h2 {
+    margin: 0;
+
+    font-size: 25px;
+    line-height: 1.15;
+    font-weight: 700;
+
+    color: #111827;
+
+    word-break: break-word;
+}
+
+
+/* ============================================================
+   DESCRIPTION
+============================================================ */
+
+.management_summary_card p {
+    margin: 10px 0 0 0;
+
+    font-size: 12px;
+    line-height: 1.5;
+
+    color: #8a9099;
+}
+
+
+/* ============================================================
+   FINANCIAL CARDS
+============================================================ */
+
+/* Sales revenue */
+
+.management_summary_card:nth-child(5)::before {
+    background: #2563eb;
+}
+
+/* Cost */
+
+.management_summary_card:nth-child(6)::before {
+    background: #f59e0b;
+}
+
+/* Profit */
+
+.management_summary_card:nth-child(7)::before {
+    background: #16a34a;
+}
+
+.management_summary_card:nth-child(7) h2 {
+    color: #15803d;
+}
+
+/* Loss */
+
+.management_summary_card:nth-child(8)::before {
+    background: #dc2626;
+}
+
+.management_summary_card:nth-child(8) h2 {
+    color: #dc2626;
+}
+
+
+/* ============================================================
+   PROFIT MARGIN
+============================================================ */
+
+.management_summary_card:nth-child(9)::before {
+    background: #7c3aed;
+}
+
+.management_summary_card:nth-child(9) h2 {
+    color: #6d28d9;
+}
+
+
+/* ============================================================
+   STOCK VALUE
+============================================================ */
+
+.management_summary_card:nth-child(10)::before {
+    background: #0891b2;
+}
+
+
+/* ============================================================
+   POTENTIAL REVENUE
+============================================================ */
+
+.management_summary_card:nth-child(11)::before {
+    background: #2563eb;
+}
+
+
+/* ============================================================
+   POTENTIAL PROFIT
+============================================================ */
+
+.management_summary_card:nth-child(12)::before {
+    background: #16a34a;
+}
+
+.management_summary_card:nth-child(12) h2 {
+    color: #15803d;
+}
+
+
+/* ============================================================
+   TABLET
+============================================================ */
+
+@media screen and (max-width: 1200px) {
+
+    .management_summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* ============================================================
+   SMALL TABLET
+============================================================ */
+
+@media screen and (max-width: 850px) {
+
+    .management_summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .management_summary_card {
+        padding: 17px;
+    }
+
+    .management_summary_card h2 {
+        font-size: 22px;
+    }
+
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media screen and (max-width: 520px) {
+
+    .management_summary {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .management_summary_card {
+        padding: 17px 18px;
+        min-height: 125px;
+    }
+
+    .management_summary_card h4 {
+        font-size: 10px;
+        margin-bottom: 10px;
+    }
+
+    .management_summary_card h2 {
+        font-size: 24px;
+    }
+
+    .management_summary_card p {
+        font-size: 11px;
+        margin-top: 8px;
+    }
+
+}
