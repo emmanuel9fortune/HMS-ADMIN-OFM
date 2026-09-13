@@ -156,6 +156,7 @@ const searchSubscription = require('./server/admin/searchSubscription');
 const editservice = require('./server/admin/editservice');
 const patientStats = require('./server/admin/patientStats');
 const editcards = require('./server/admin/editcards');
+const getDispensing = require('./server/admin/getDispensing');
 
 
 const doctordashboard = require('./server/doctor/dashboard');
@@ -517,6 +518,7 @@ async function createServer() {
     serverApp.use('/drugRequest', drugRequest);
     serverApp.use('/utilsDispenser', utilsDispenser);
     serverApp.use('/dispencehistory', dispencehistory);
+    serverApp.use('/getDispensing', getDispensing);
 
     serverApp.use((req, res) => {
         res.status(404).send(`Route not found: ${req.method} ${req.originalUrl}`);

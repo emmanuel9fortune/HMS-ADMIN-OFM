@@ -550,6 +550,62 @@ const AnteNatSub = new mongoose.Schema({
     id: String
 })
 
+const dispensingSchem = new mongoose.Schema(
+    {
+        billId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "billRequests",
+            required: true
+        },
+
+        patientId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Patients",
+            required: true
+        },
+
+        staffId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "staffs",
+            required: true
+        },
+
+        items: [
+            {
+                utilId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "utils",
+                    required: true
+                },
+
+                name: String,
+
+                quantity: {
+                    type: Number,
+                    required: true
+                },
+
+                sellingPrice: Number,
+                originalPrice: Number
+            }
+        ],
+
+        totalQuantity: {
+            type: Number,
+            default: 0
+        },
+
+        dispensedAt: {
+            type: Date,
+            default: Date.now
+        }
+    },
+    {
+        timestamps: true
+    }
+);
+
+
 const clinicalnote = new mongoose.Schema({
     uid : String,
     clinicalnote : [clinicalnoteArray]
@@ -601,6 +657,7 @@ const patientdiagnos = mongoose.models.patientdiagnoses || mongoose.model('patie
 const AnteNat = mongoose.models.AnteNatSub || mongoose.model('AnteNatSub', AnteNatSub);
 const subscribes = mongoose.models.subscribe || mongoose.model('subscribe', subscribe);
 const cards = mongoose.models.card || mongoose.model('card', card);
+const Dispensing = mongoose.models.dispensingSchem || mongoose.model('dispensingSchem', dispensingSchem);
 
 
 const storage = multer.diskStorage({
@@ -643,4 +700,4 @@ const scanupload = multer({
 })
 
 // Export models
-module.exports = { Patient, antenatal, service, payment, staff, register, patientEdited, scanupload, staffUpload, queue, serve, util, notifications, vital, task, note, labs, scans, request, prescribes, bill, billRequests, handoffs, rosters, medications, labours, babyschem, urineschem, churchBill, clinicalnotes, expenses, diagnos, patientdiagnos, AnteNat, subscribes, cards};
+module.exports = { Patient, antenatal, service, payment, staff, register, patientEdited, scanupload, staffUpload, queue, serve, util, notifications, vital, task, note, labs, scans, request, prescribes, bill, billRequests, handoffs, rosters, medications, labours, babyschem, urineschem, churchBill, clinicalnotes, expenses, diagnos, patientdiagnos, AnteNat, subscribes, cards, Dispensing};

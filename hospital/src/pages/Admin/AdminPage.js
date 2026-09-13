@@ -21,6 +21,7 @@ import EditReceipt from './EditReceipt'
 import DataAnalyst from './DataAnalyst'
 import { ToastContainer } from 'react-toastify'
 import PatientStatistics from './PatientStatistics'
+import DispensingRecords from './DispenseRecord'
 
 
 function AdminPage() {
@@ -77,6 +78,7 @@ function AdminPage() {
           <Route path='/editreceipt' element={<EditReceipt/>} />
           <Route path='/data_analyst' element={<DataAnalyst/>} />
           <Route path='/patient_stats' element={<PatientStatistics/>} />
+          <Route path='/dispenseRecord' element={<DispensingRecords/>} />
       </Routes>
     </Router> 
   )

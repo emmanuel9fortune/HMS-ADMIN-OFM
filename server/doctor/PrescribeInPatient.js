@@ -33,16 +33,16 @@ router.post('/', async(req, res) => {
                 )
             }
  
-            for(let item of cartItems ){
-                await util.findOneAndUpdate(
-                    {
-                        _id: item.id
-                    },
-                    {
-                        $inc:{quantity: -item.quantity}
-                    }
-                )
-            }
+            // for(let item of cartItems ){
+            //     await util.findOneAndUpdate(
+            //         {
+            //             _id: item.id
+            //         },
+            //         {
+            //             $inc:{quantity: -item.quantity}
+            //         }
+            //     )
+            // }
         }else{
             await prescribes.create({
                 uid,
@@ -55,17 +55,17 @@ router.post('/', async(req, res) => {
                 oid,
             })
 
-            for(let item of cartItems ){
-                await util.findOneAndUpdate(
-                    {
-                        _id: item.id
-                    },
-                    {
-                        $inc:{quantity: -item.quantity}
-                    }
-                )
+            // for(let item of cartItems ){
+            //     await util.findOneAndUpdate(
+            //         {
+            //             _id: item.id
+            //         },
+            //         {
+            //             $inc:{quantity: -item.quantity}
+            //         }
+            //     )
 
-            }
+            // }
         }
         
         const getpatientName = await  Patient.findOne({_id:uid})

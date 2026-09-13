@@ -25,18 +25,18 @@ router.post('/', async(req, res) => {
             oid
         })
 
-        for(let item of cartItems ){  
-            await util.findOneAndUpdate(
-                {
-                    _id: item.id,
-                    quantity: {$gte: item.quantity}
-                },
-                {
-                    $inc:{quantity: -item.quantity}
-                }
-            )
+        // for(let item of cartItems ){  
+        //     await util.findOneAndUpdate(
+        //         {
+        //             _id: item.id,
+        //             quantity: {$gte: item.quantity}
+        //         },
+        //         {
+        //             $inc:{quantity: -item.quantity}
+        //         }
+        //     )
 
-        }
+        // }
 
         await prescribes.updateOne(
             {_id: id},

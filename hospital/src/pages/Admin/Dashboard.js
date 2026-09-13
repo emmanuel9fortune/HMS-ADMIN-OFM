@@ -52,7 +52,7 @@ function Dashboard() {
 
     const [getbatch, setgetbatch] = useState(null)
     const [getbatches, setgetbatches] = useState([])
-  const cip = window.location.hostname
+    const cip = window.location.hostname
 
     const handleBatch =async(e)=>{
         const batch = e.target.value

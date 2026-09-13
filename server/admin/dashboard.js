@@ -16,40 +16,59 @@ router.post('/', async(req, res) => {
 
         const TotalInvoice = await billRequests.countDocuments({status: 'PAID'})
 
-        const now = Math.floor(new Date("2025-09-08T00:00:00Z").getTime() / 1000);
+        const now = Math.floor(Date.now() / 1000);
 
-        const stocksExpire  =  await util.aggregate([
-        // Filter documents where limit exists and is not null
-        { 
-            $match: {
-            limit: { $ne: null, $exists: true }
-            }
-        },
-        // Convert expireDate string to number safely
-        {
-            $addFields: {
-            expireDateNum: {
-                $convert: {
-                input: "$expireDate",
-                to: "long",
-                onError: null,
-                onNull: null
+        const stocksExpire = await util.aggregate([
+            {
+                $match: {
+                    type: "drugs",
+                    expireDate: { $exists: true, $ne: null },
+                    explimit: { $exists: true, $ne: null }
+                }
+            },
+
+            {
+                $addFields: {
+                    expireDateNum: {
+                        $convert: {
+                            input: "$expireDate",
+                            to: "long",
+                            onError: null,
+                            onNull: null
+                        }
+                    }
+                }
+            },
+
+            {
+                $match: {
+                    $expr: {
+                        $and: [
+                            // Has not already expired
+                            { $gte: ["$expireDateNum", now] },
+
+                            // Expiration is within explimit days
+                            {
+                                $lte: [
+                                    "$expireDateNum",
+                                    {
+                                        $add: [
+                                            now,
+                                            { $multiply: ["$explimit", 86400] }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+
+            {
+                $sort: {
+                    expireDateNum: 1
                 }
             }
-            }
-        },
-        // Ensure expireDateNum is valid and apply the alert condition
-        {
-            $match: {
-            expireDateNum: { $ne: null },
-            $expr: {
-                $gte: [
-                { $add: [now, { $multiply: ["$explimit", 86400] }] },
-                "$expireDateNum"
-                ]
-            }
-            }
-        }
         ]);
 
         const getutilID = stocksExpire?.map(item => item?._id) || [];

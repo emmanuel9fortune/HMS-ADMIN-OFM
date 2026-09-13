@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import AdminBar from '../../components/AdminBar'
-import { FaSearch } from 'react-icons/fa'
+import { FaSearch, FaUser } from 'react-icons/fa'
 import axios from 'axios'
 import DrugsBar from './DrugBar'
 import { toast } from 'react-toastify'
+import { Link } from 'react-router-dom'
 
 function SearchDrugs() {
 
@@ -241,7 +242,7 @@ function SearchDrugs() {
                   <FaSearch/>
                   <input value={getsearch} onChange={handleSearch} placeholder='Search' />
               </div>
-               
+                <Link to='/dispenseRecord' className='dashboard_body_header_button' > <FaUser/> Dispense Record</Link>
           </div>
 
             <h3>SEARCH RESULTS</h3> 

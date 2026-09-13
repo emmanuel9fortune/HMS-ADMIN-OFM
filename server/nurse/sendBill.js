@@ -56,18 +56,18 @@ router.post('/', async(req, res) => {
             })
         }
 
-        for(let item of cartItems ){
-            await util.findOneAndUpdate(
-                {
-                    _id: item.id,
-                    quantity: {$gte: item.quantity}
-                },
-                {
-                    $inc:{quantity: -item.quantity}
-                }
-            )
+        // for(let item of cartItems ){
+        //     await util.findOneAndUpdate(
+        //         {
+        //             _id: item.id,
+        //             quantity: {$gte: item.quantity}
+        //         },
+        //         {
+        //             $inc:{quantity: -item.quantity}
+        //         }
+        //     )
  
-        }
+        // }
 
         const getpatientName = await  Patient.findOne({_id:uid})
         
