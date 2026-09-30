@@ -33,6 +33,10 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const MongoStore = require('rate-limit-mongo');
 
+const {
+    migrateBillRequests
+} = require("./server/scripts/migrateBillRequests");
+
 
 const http = require('http')
 
@@ -157,6 +161,7 @@ const editservice = require('./server/admin/editservice');
 const patientStats = require('./server/admin/patientStats');
 const editcards = require('./server/admin/editcards');
 const getDispensing = require('./server/admin/getDispensing');
+const mainaudit = require('./server/admin/audit');
 
 
 const doctordashboard = require('./server/doctor/dashboard');
@@ -227,16 +232,86 @@ const options = {
 // ---getting current user info -- //
 // ---------------- ///
 
-const connectWithRetry = () => {
-    mongoose.connect(uri, options)
-        .then(() => ('Connected to MongoDB'))
-        .catch((error) => {
-            console.error('Error connecting to MongoDB, retrying in 5 seconds...', error);
-            setTimeout(connectWithRetry, 5000);
-        });
-};
+let billRequestMigrationStarted = false;
 
-connectWithRetry();
+
+async function connectWithRetry() {
+
+    try {
+
+        await mongoose.connect(
+            uri,
+            options
+        );
+
+
+        console.log(
+            "MongoDB connected successfully"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "MongoDB connection failed:",
+            error
+        );
+
+
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    5000
+                )
+        );
+
+
+        return connectWithRetry();
+    }
+
+
+    // ========================================================
+    // RUN MIGRATION
+    // ========================================================
+
+    if (
+        !billRequestMigrationStarted
+    ) {
+
+        billRequestMigrationStarted = true;
+
+
+        try {
+
+            console.log(
+                "\nStarting bill request migration..."
+            );
+
+
+            await migrateBillRequests();
+
+
+            console.log(
+                "Bill request migration completed."
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Bill request migration failed:"
+            );
+
+            console.error(
+                error
+            );
+        }
+    }
+
+
+    return true;
+}
+
 
 // Listen for successful connection
 mongoose.connection.once('open', () => {
@@ -519,6 +594,7 @@ async function createServer() {
     serverApp.use('/utilsDispenser', utilsDispenser);
     serverApp.use('/dispencehistory', dispencehistory);
     serverApp.use('/getDispensing', getDispensing);
+    serverApp.use('/main-audit', mainaudit);
 
     serverApp.use((req, res) => {
         res.status(404).send(`Route not found: ${req.method} ${req.originalUrl}`);
@@ -604,6 +680,7 @@ async function createServer() {
     monitorNetworkAndPublishBonjour();
 }
 
+
 ///////////////////////////////////////////////////////
 // Create Electron Window
 function createWindow() {
@@ -674,7 +751,10 @@ app.commandLine.appendSwitch(
 
 ///////////////////////////////////////////////////////
 // App Lifecycle
-app.whenReady().then(() => {
+app.whenReady().then(async() => {
+
+    await connectWithRetry();
+
     createWindow();
     createServer();
 });

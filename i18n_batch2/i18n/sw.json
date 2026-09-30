@@ -1,0 +1,80 @@
+{
+  "home": {
+    "header": {
+      "text1": "Kuhusu Sisi",
+      "text2": "Hifadhi",
+      "text3": "Jinsi Inavyofanya Kazi",
+      "text4": "Ingia Mwekezaji",
+      "text5": "Uchambuzi",
+      "text6": "Wasiliana"
+    },
+    "banner": {
+      "banner_txt1": "Worldcrest Real Estate Income Trust",
+      "banner_txt2": "WREIT",
+      "banner_txt3": "Kuleta nguvu ya Worldcrest Real Estate kwa Wekeza binafsi"
+    },
+    "class": {
+      "option1": "Darasa I",
+      "class1_txt1": "Rudisha mwaka hadi tarehe tangu Januari 2017",
+      "class1_txt2": "Kiwango cha mgawanyo wa mwaka",
+      "class1_txt3": "Bei ya muamala",
+      "class1_txt4": "Thamani ya mali safi",
+      "option2": "Darasa S",
+      "option3": "Darasa T",
+      "option4": "Darasa D"
+    },
+    "feat": {
+      "text1": "",
+      "text2": "Uwekezaji uliochaguliwa",
+      "text3": "Makazi",
+      "text8": "Huduma za wageni",
+      "text4": "Huduma za Afya",
+      "text5": "Viwanda",
+      "text6": "Ofisi za Biashara",
+      "text7": "Mauzo ya rejareja"
+    },
+    "latest": {
+      "text1": "Zaidi kutoka WREIT",
+      "text2": "Habari na mtazamo wa hivi karibuni kutoka WREIT",
+      "text3": "UCHAMBUZI WA WORLDCREST",
+      "text4": "UTENDAJI WA KATI",
+      "text5": "KWANINI WREIT SASA",
+      "text6": "KWA WANAHISA",
+      "text7": "Worldcrest inaendelea kutoa utendaji thabiti unaoongozwa na mapato.",
+      "text8": "Utendaji thabiti katika anga za usafirishaji, makazi na miundombinu ya dijiti.",
+      "text9": "Soko la kimataifa lipo katika mchakato wa kurekebishwa."
+    },
+    "invest": {
+      "text1": "Kutoa Thamani kwa Wekeza",
+      "text2": "Nguvu ya mali isiyohamishika katika hifadhi yako",
+      "text3": "WREIT imeleta mapato makubwa tangu kuanzishwa.",
+      "text4": "Utendaji Wetu",
+      "text5": "Hifadhi ya mawazo yetu bora",
+      "text6": "Kuzingatia sekta zenye mahitaji ya muda mrefu.",
+      "text7": "Hifadhi Yetu",
+      "text8": "Fungua nguvu ya kiwango",
+      "text9": "WREIT inatoa ufikivu kwa Wekeza binafsi kwa Worldcrest Real Estate.",
+      "text10": "Kwa nini uwekezaji katika WREIT",
+      "text11": "Jenga utajiri na Worldcrest",
+      "text12": "Uwekezaji una hatari, ikiwa ni pamoja na kupoteza mtaji"
+    },
+    "sub": {
+      "text1": "Uwezo wetu wa kubaini mitindo mapema unasababisha utendaji bora.",
+      "text2": "Lee Mi-Kyung",
+      "text3": "Rais na Mkurugenzi Mtendaji",
+      "text4": "Kwa nini uwekezaji katika WREIT",
+      "text5": "Mbinu yetu ya uwekezaji inatofautisha WREIT."
+    },
+    "btm": {
+      "text1": "HUDUMA",
+      "text2": "Hifadhi",
+      "text3": "Uchambuzi",
+      "text4": "VIUNGO VYA HARAKA",
+      "text5": "Nyumbani",
+      "text6": "Kuhusu Sisi",
+      "text7": "Wasiliana Nasi",
+      "text8": "Jinsi Inavyofanya Kazi",
+      "text9": "Masharti na Vigezo"
+    }
+  }
+}

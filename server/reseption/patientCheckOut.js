@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const { billRequests, Patient, request, notifications } = require('../../model');
 const { getIO } = require('../../socketManager');
+const BillRequest = require('../model/BillRequest');
+const BillRequestItem = require('../model/BillRequestItem');
 
 router.post('/', async(req, res) => {
     try {
@@ -18,6 +20,78 @@ router.post('/', async(req, res) => {
             {_id: getID?.approve},
             {$set: {status: 'AWAITING'}}
         )
+
+        // await BillRequest.updateOne(
+        //     { _id: billId },
+
+        //     {
+        //         $set: {
+        //             'payment.status': 'PAID',
+        //             'payment.mode': mode,
+        //             'payment.paidAt': new Date(),
+        //             'payment.paidBy': staff,
+
+        //             'workflow.currentDepartment': 'cashier',
+        //             'workflow.nextDepartment': null,
+        //             'workflow.stage': 'COMPLETED',
+
+        //             'dates.completedAt': new Date(),
+
+        //         }
+        //     }
+        // );
+
+        // await BillRequestItem.insertMany(
+        //     services.map((item) => ({
+        //         billRequestId: bill._id,
+
+        //         itemId: item.id,
+
+        //         name:
+        //         item.drugs ||
+        //         item.name,
+
+        //         serviceType:
+        //         "drugs",
+
+        //         quantity:
+        //         item.quantity || 1,
+
+        //         unitPrice:
+        //         item.price || 0,
+
+        //         totalPrice:
+        //         item.totalPrice ||
+        //         (
+        //             (item.price || 0) *
+        //             (item.quantity || 1)
+        //         ),
+
+        //         costPrice:
+        //         item.oprice || 0,
+
+        //         actualCost:
+        //         item.actualPrice || 0,
+
+        //         days:
+        //         item.days || null,
+
+        //         dosage:
+        //         item.dosage || null,
+
+        //         frequency:
+        //         item.time || null,
+
+        //         status:
+        //         item.status || null,
+
+        //         time:
+        //         item.time || null,
+
+        //         sourceType:
+        //         "doctor",
+        //     }))
+        // );
 
         if(getID?.slag){
             await billRequests.updateOne({uid, _id:billId },{status:'AWAITING', mode, timeStamp: new Date().getTime(), tag:'PAID', staff})

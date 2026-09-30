@@ -22,6 +22,7 @@ import DataAnalyst from './DataAnalyst'
 import { ToastContainer } from 'react-toastify'
 import PatientStatistics from './PatientStatistics'
 import DispensingRecords from './DispenseRecord'
+import Audits from './newAudit'
 
 
 function AdminPage() {
@@ -74,7 +75,8 @@ function AdminPage() {
           <Route path='/deletecosumable' element={<Paymentdesk/>} />
           <Route path='/addroster' element={<Roster/>} />
           <Route path='/Laboratory' element={<Lab/>} />
-          <Route path='/audit' element={<Audit/>} />
+          {/* <Route path='/audit' element={<Audit/>} /> */}
+          <Route path='/audit' element={<Audits/>} />
           <Route path='/editreceipt' element={<EditReceipt/>} />
           <Route path='/data_analyst' element={<DataAnalyst/>} />
           <Route path='/patient_stats' element={<PatientStatistics/>} />

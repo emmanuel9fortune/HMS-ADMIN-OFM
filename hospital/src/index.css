@@ -270,6 +270,165 @@ h4{
     margin-left: 10px;
 }
 
+.audit_results_loading {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    min-height: 350px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(3px);
+}
+
+.audit_loading_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 30px;
+}
+
+.audit_loading_box h4 {
+    margin: 15px 0 5px;
+    font-size: 16px;
+}
+
+.audit_loading_box p {
+    margin: 0;
+    color: #777;
+    font-size: 13px;
+}
+
+.audit_spinner {
+    width: 38px;
+    height: 38px;
+
+    border: 4px solid #e5e5e5;
+    border-top-color: #168a45;
+
+    border-radius: 50%;
+
+    animation: auditSpin 0.8s linear infinite;
+}
+
+@keyframes auditSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.audit-export-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.audit-export-modal {
+    width: min(460px, 100%);
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 35px 30px;
+    text-align: center;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+    animation: auditExportModalIn 0.25s ease;
+}
+
+@keyframes auditExportModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.audit-export-spinner {
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 20px;
+    border: 5px solid #e8e8e8;
+    border-top-color: #111827;
+    border-radius: 50%;
+    animation: auditExportSpin 0.8s linear infinite;
+}
+
+@keyframes auditExportSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.audit-export-modal h3 {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.audit-export-status {
+    margin: 10px 0 20px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.audit-export-count {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.audit-export-count strong {
+    color: #111827;
+    font-size: 16px;
+}
+
+.audit-export-progress {
+    width: 100%;
+    height: 9px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.audit-export-progress-bar {
+    height: 100%;
+    background: #111827;
+    border-radius: 20px;
+    transition: width 0.25s ease;
+}
+
+.audit-export-percent {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.audit-export-warning {
+    margin-top: 22px;
+    padding: 11px 13px;
+    background: #f9fafb;
+    border-radius: 9px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
 /* ============================================================
    SMALL TABLET
 ============================================================ */

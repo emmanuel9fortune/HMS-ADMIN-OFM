@@ -4,6 +4,8 @@ const express = require('express');
 const router = express.Router();
 const { billRequests, Patient, notifications, prescribes } = require('../../model');
 const { getIO } = require('../../socketManager');
+// const BillRequest = require('../model/BillRequest');
+// const BillRequestItem = require('../model/BillRequestItem');
 
 router.post('/', async(req, res) => {
     try {
@@ -12,6 +14,132 @@ router.post('/', async(req, res) => {
         const docID = req.body.docID
         const services = req.body.services
         const oid = req.body.oid
+
+        const calculatedItems = services.map(item => {
+            const quantity = Number(item.quantity) || 1;
+            const unitPrice = Number(item.price) || 0;
+
+            const totalPrice =
+                Number(item.totalPrice) ||
+                (unitPrice * quantity);
+
+            const actualCost =
+                Number(item.actualPrice) || 0;
+
+            return {
+                itemId: item.id || null,
+
+                name: item.drugs || item.name,
+
+                quantity,
+
+                unitPrice,
+
+                totalPrice,
+
+                costPrice: Number(item.oprice) || 0,
+
+                actualCost,
+
+                days: item.days || null,
+
+                dosage: item.dosage || null,
+
+                frequency: item.time || null,
+
+                status: item.status || null,
+
+                time: item.time || null,
+
+                sourceType: 'doctor'
+            };
+        });
+
+        const total = calculatedItems.reduce(
+            (sum, item) => sum + item.totalPrice,
+            0
+        );
+
+        const actualCost = calculatedItems.reduce(
+            (sum, item) => sum + item.actualCost,
+            0
+        );
+
+        const profit = total - actualCost;
+
+        // const bill = await BillRequest.create({
+        //     patient: {
+        //         uid
+        //     },
+
+        //     patientType: 'inpatient',
+
+        //     type: 'doctor',
+
+        //     staff: {
+        //         doctorId: docID
+        //     },
+
+        //     payment: {
+        //         status: 'UNPAID'
+        //     },
+
+        //     workflow: {
+        //         currentDepartment: 'cashier',
+        //         nextDepartment: 'cashier',
+        //         stage: 'AWAITING_PAYMENT'
+        //     },
+
+        //     financials: {
+        //         total,
+        //         actualCost,
+        //         profit,
+
+        //         calculatedTotal: total,
+        //         calculatedCost: actualCost,
+        //         calculatedProfit: profit,
+
+        //         totalDifference: 0,
+        //         hasMismatch: false
+        //     },
+
+        //     billDate: new Date(),
+        //     preTime: new Date()
+        // });
+
+        // await BillRequestItem.insertMany(
+        //     services.map(item => ({
+        //         billRequestId: bill._id,
+
+        //         itemId: item.id,
+
+        //         name: item.drugs || item.name,
+
+        //         quantity: item.quantity || 1,
+
+        //         unitPrice: item.price || 0,
+
+        //         totalPrice: item.totalPrice || (
+        //             (item.price || 0) * (item.quantity || 1)
+        //         ),
+
+        //         costPrice: item.oprice || 0,
+
+        //         actualCost: item.actualPrice || 0,
+
+        //         days: item.days || null,
+
+        //         dosage: item.dosage || null,
+
+        //         frequency: item.time || null,
+
+        //         status: item.status || null,
+
+        //         time: item.time || null,
+
+        //         sourceType: 'doctor'
+        //     }))
+        // );
 
         if(docID){
             await billRequests.create({

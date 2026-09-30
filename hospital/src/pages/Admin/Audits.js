@@ -40,29 +40,60 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
     const [sort, setsort] = useState('')
 
-    useEffect(()=>{
-        const controller = new AbortController()
-        const func =async()=>{            
+    const [isLoadingData, setIsLoadingData] = useState(false);
+    const [isCalculating, setIsCalculating] = useState(false);
+
+    const isBusy = isLoadingData || isCalculating;
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        const fetchAuditData = async () => {
+            // Don't make request until dates exist
+            if (!date || !enddate) return;
+
+            setIsLoadingData(true);
+
             try {
-                await axios.post(`http://${cip || 'localhost'}:7700/audit`, {unix: date, eunix: enddate, sorts: sort, mode, staff, signal: controller.signal}).then((res)=>{      
-                                  
-                    if(res.data.status === 'success'){
-                        setgetPatient(res.data.getPatients)
-                        setgetComplete(res.data.paidBlls)
-                        setexpenses(res.data.expense)
-                        setstaffs(res.data.staffs)
-                        // setpending(res.data.pendingBills)
-                        setdebtors(res.data.debtBills)
-                        setawaiting(res.data.pharmBills)
+                const res = await axios.post(
+                    `http://${cip || 'localhost'}:7700/audit`,
+                    {
+                        unix: date,
+                        eunix: enddate,
+                        sorts: sort,
+                        mode,
+                        staff
+                    },
+                    {
+                        signal: controller.signal
                     }
-                })
+                );
+
+                if (res.data.status === 'success') {
+                    setgetPatient(res.data.getPatients || []);
+                    setgetComplete(res.data.paidBlls || []);
+                    setexpenses(res.data.expense || []);
+                    setstaffs(res.data.staffs || []);
+                    setdebtors(res.data.debtBills || []);
+                    setawaiting(res.data.pharmBills || []);
+                }
+
             } catch (error) {
-                //console.log(error);
+                if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
+                    console.error('Error fetching audit data:', error);
+                }
+            } finally {
+                if (!controller.signal.aborted) {
+                    setIsLoadingData(false);
+                }
             }
-        }
-        func()
-      return ()=> controller.abort()
-    },[date, enddate, cip, sort, mode, staff])
+        };
+
+        fetchAuditData();
+
+        return () => controller.abort();
+
+    }, [date, enddate, cip, sort, mode, staff]);
 
     const handleDate = (e) => {
         const raw = e.target.value;
@@ -82,146 +113,191 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
     const [totalPrice3, setTotalPrice3] = useState(0)
 
     useEffect(() => {
-        let total = 0;
+        let cancelled = false;
 
-        getComplete?.forEach((entry) => {
-            try {
-            const parsed = JSON.parse(entry.services);
+        setIsCalculating(true);
 
-            // Case 1: Array (lab services)
-            if (Array.isArray(parsed)) {
-                parsed.forEach(service => {
-                if (service.totalPrice) {
-                    total += service.totalPrice;
-                } else if (service.price) {
-                    total += service.price;
+        const calculateTotals = () => {
+
+            if (cancelled) return;
+
+            // =========================
+            // COMPLETED
+            // =========================
+
+            let total = 0;
+
+            getComplete?.forEach((entry) => {
+                try {
+                    const parsed = JSON.parse(entry.services);
+
+                    if (Array.isArray(parsed)) {
+
+                        parsed.forEach(service => {
+                            if (service.totalPrice) {
+                                total += service.totalPrice;
+                            } else if (service.price) {
+                                total += service.price;
+                            }
+                        });
+
+                    } else if (parsed && typeof parsed === 'object') {
+
+                        if (parsed.totalPrice) {
+                            total += parsed.totalPrice;
+                        } else if (parsed.actualPrice) {
+                            total += parsed.actualPrice;
+                        } else if (parsed.price) {
+                            total += parsed.price;
+                        }
+                    }
+
+                } catch (e) {
+                    console.warn(
+                        `Invalid JSON in services for ID ${entry._id}`
+                    );
                 }
-                });
+            });
 
-            // Case 2: Object with .items (pharmacy)
-            }else if (parsed && typeof parsed === 'object') {
-                if (parsed.totalPrice) {
-                total += parsed.totalPrice;
-                } else if (parsed.actualPrice) {
-                total += parsed.actualPrice;
-                } else if (parsed.price) {
-                total += parsed.price;
+            setTotalPrice(total);
+
+
+            // =========================
+            // PENDING
+            // =========================
+
+            let total1 = 0;
+
+            pending?.forEach((entry) => {
+                try {
+                    const parsed = JSON.parse(entry.services);
+
+                    if (Array.isArray(parsed)) {
+
+                        parsed.forEach(service => {
+                            if (service.totalPrice) {
+                                total1 += service.totalPrice;
+                            } else if (service.price) {
+                                total1 += service.price;
+                            }
+                        });
+
+                    } else if (parsed && typeof parsed === 'object') {
+
+                        if (parsed.totalPrice) {
+                            total1 += parsed.totalPrice;
+                        } else if (parsed.actualPrice) {
+                            total1 += parsed.actualPrice;
+                        } else if (parsed.price) {
+                            total1 += parsed.price;
+                        }
+                    }
+
+                } catch (e) {
+                    console.warn(
+                        `Invalid JSON in services for ID ${entry._id}`
+                    );
                 }
-            }
+            });
+
+            setTotalPrice1(total1);
 
 
-            } catch (e) {
-            console.warn(`Invalid JSON in services for ID ${entry._id}`);
-            }
-        });
+            // =========================
+            // AWAITING
+            // =========================
 
-        setTotalPrice(total);
+            let total2 = 0;
 
-        let total1 = 0;
+            awaiting?.forEach((entry) => {
+                try {
+                    const parsed = JSON.parse(entry.services);
 
-        pending?.forEach((entry) => {
-            try {
-            const parsed = JSON.parse(entry.services);
+                    if (Array.isArray(parsed)) {
 
-            // Case 1: Array (lab services)
-            if (Array.isArray(parsed)) {
-                parsed.forEach(service => {
-                if (service.totalPrice) {
-                    total1 += service.totalPrice;
-                } else if (service.price) {
-                    total1 += service.price;
+                        parsed.forEach(service => {
+                            if (service.totalPrice) {
+                                total2 += service.totalPrice;
+                            } else if (service.price) {
+                                total2 += service.price;
+                            }
+                        });
+
+                    } else if (parsed && typeof parsed === 'object') {
+
+                        if (parsed.totalPrice) {
+                            total2 += parsed.totalPrice;
+                        } else if (parsed.actualPrice) {
+                            total2 += parsed.actualPrice;
+                        } else if (parsed.price) {
+                            total2 += parsed.price;
+                        }
+                    }
+
+                } catch (e) {
+                    console.warn(
+                        `Invalid JSON in services for ID ${entry._id}`
+                    );
                 }
-                });
+            });
 
-            // Case 2: Object with .items (pharmacy)
-            }else if (parsed && typeof parsed === 'object') {
-                if (parsed.totalPrice) {
-                total1 += parsed.totalPrice;
-                } else if (parsed.actualPrice) {
-                total1 += parsed.actualPrice;
-                } else if (parsed.price) {
-                total1 += parsed.price;
+            setTotalPrice2(total2);
+
+
+            // =========================
+            // DEBTORS
+            // =========================
+
+            let total3 = 0;
+
+            debtors?.forEach((entry) => {
+                try {
+                    const parsed = JSON.parse(entry.services);
+
+                    if (Array.isArray(parsed)) {
+
+                        parsed.forEach(service => {
+                            if (service.totalPrice) {
+                                total3 += service.totalPrice;
+                            } else if (service.price) {
+                                total3 += service.price;
+                            }
+                        });
+
+                    } else if (parsed && typeof parsed === 'object') {
+
+                        if (parsed.totalPrice) {
+                            total3 += parsed.totalPrice;
+                        } else if (parsed.actualPrice) {
+                            total3 += parsed.actualPrice;
+                        } else if (parsed.price) {
+                            total3 += parsed.price;
+                        }
+                    }
+
+                } catch (e) {
+                    console.warn(
+                        `Invalid JSON in services for ID ${entry._id}`
+                    );
                 }
+            });
+
+            setTotalPrice3(total3);
+
+            if (!cancelled) {
+                setIsCalculating(false);
             }
+        };
 
+        // Give React/browser time to display "Calculating..."
+        const timer = setTimeout(calculateTotals, 0);
 
-            } catch (e) {
-            console.warn(`Invalid JSON in services for ID ${entry._id}`);
-            }
-        });
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
 
-        setTotalPrice1(total1);
-
-        let total2 = 0;
-
-        awaiting?.forEach((entry) => {
-            try {
-            const parsed = JSON.parse(entry.services);
-
-            // Case 1: Array (lab services)
-            if (Array.isArray(parsed)) {
-                parsed.forEach(service => {
-                if (service.totalPrice) {
-                    total2 += service.totalPrice;
-                } else if (service.price) {
-                    total2 += service.price;
-                }
-                });
-
-            // Case 2: Object with .items (pharmacy)
-            }else if (parsed && typeof parsed === 'object') {
-                if (parsed.totalPrice) {
-                total2 += parsed.totalPrice;
-                } else if (parsed.actualPrice) {
-                total2 += parsed.actualPrice;
-                } else if (parsed.price) {
-                total2 += parsed.price;
-                }
-            }
-
-
-            } catch (e) {
-            console.warn(`Invalid JSON in services for ID ${entry._id}`);
-            }
-        });
-
-        setTotalPrice2(total2);
-
-        let total3 = 0;
-
-        debtors?.forEach((entry) => {
-            try {
-            const parsed = JSON.parse(entry.services);
-
-            // Case 1: Array (lab services)
-            if (Array.isArray(parsed)) {
-                parsed.forEach(service => {
-                if (service.totalPrice) {
-                    total3 += service.totalPrice;
-                } else if (service.price) {
-                    total3 += service.price;
-                }
-                });
-
-            // Case 2: Object with .items (pharmacy)
-            }else if (parsed && typeof parsed === 'object') {
-                if (parsed.totalPrice) {
-                total3 += parsed.totalPrice;
-                } else if (parsed.actualPrice) {
-                total3 += parsed.actualPrice;
-                } else if (parsed.price) {
-                total3 += parsed.price;
-                }
-            }
-
-
-            } catch (e) {
-            console.warn(`Invalid JSON in services for ID ${entry._id}`);
-            }
-        });
-
-        setTotalPrice3(total3);
-    }, [getComplete, pending, awaiting, debtors]); 
+    }, [getComplete, pending, awaiting, debtors]);
 
 
 
@@ -269,6 +345,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         setenddate(end);
         setsort(prev => prev); // keep sort value unchanged
 
+        setIsLoadingData(true);
+
         try {
             const res = await axios.post(`http://${cip || 'localhost'}:7700/audit/year`, { year, sorts: sort, id: staff });
             if (res.data.status === 'success') {
@@ -282,6 +360,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
             }
         } catch (err) {
             console.error('Error fetching yearly data:', err);
+        }finally {
+            setIsLoadingData(false);
         }
     };
 
@@ -624,6 +704,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         setfilteredData(result)
         
     }
+
+    
     
   return (
         <div style={{width:'100%'}} >
@@ -696,8 +778,9 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                             <option value={'PROFESSIONAL'}>PROFESSIONAL FEES</option>
                             <option value={'NURSING'}>NURSING CARE</option>
                             <option value={'BED'}>BED FEES</option>
-                            <option value={'CHURCH'}>DELIVERY FEES</option>
-                            <option value={'CHURCH'}>PROCEDURE FEES</option>
+                            <option value={'DELIVERY FEES'}>DELIVERY FEES</option>
+                            <option value={'PROCEDURE FEES'}>PROCEDURE FEES</option>
+                            <option value={'discount'}>DISCOUNT</option>
                         </select>
                     </div>
 
@@ -733,6 +816,30 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                     <button style={{padding:'15px'}} onClick={handleFiltered} >SEARCH</button>
                 </div>      
             </div>
+
+            {isBusy && (
+                <div className="audit_results_loading">
+                    <div className="audit_loading_box">
+
+                        <div className="audit_spinner"></div>
+
+                        <h4>
+                            {isLoadingData
+                                ? 'Loading data...'
+                                : 'Calculating results...'
+                            }
+                        </h4>
+
+                        <p>
+                            {isLoadingData
+                                ? 'Please wait while we retrieve the selected records.'
+                                : 'Please wait while we calculate the final totals.'
+                            }
+                        </p>
+
+                    </div>
+                </div>
+            )}
 
             <div id='pdf-content' style={{padding:'10px'}} >
                 <div style={{padding:'10px 0', borderBottom:'.3px solid #c3c3c3', color:'green'}}>
@@ -862,6 +969,21 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                             const getconsult = getBill?.items?.filter((items)=> items?.name?.toLowerCase().includes('consultation'))
                                             const getdrugs = getBill?.items?.filter((items)=> !items?.name?.toLowerCase().includes('consultation') && !items?.name?.toLowerCase().includes('card'))
 
+                                            const parsed = JSON.parse(item.services);
+
+                                            const serviceItems = parsed?.items || [];
+
+                                            const selectedServiceItems = serviceItems.filter(
+                                                serviceItem =>
+                                                    serviceItem?.name?.toLowerCase() === sort?.toLowerCase()
+                                            );
+
+                                            const selectedServiceTotal = selectedServiceItems.reduce(
+                                                (total, serviceItem) =>
+                                                    total + Number(serviceItem?.totalPrice || 0),
+                                                0
+                                            );
+
                                             if(getcard?.length > 0 && sort === 'cards'){
                                                 return(
                                                     <tbody key={i}>
@@ -981,24 +1103,104 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                         </tr>
                                                     </tbody>
                                                 )  
-                                            }else if(sort === ''){
+                                            }else if(
+                                                sort === 'CHURCH' &&
+                                                selectedServiceItems.length > 0
+                                            ){
                                                 return(
                                                     <tbody key={i}>
                                                         <tr>
-                                                            
-                                                            <td><p>{timeString}, {`${day}-${month}-${year}`}</p></td>
-                                                            <td><p>{item?.name || patient?.name}</p></td>
+
                                                             <td>
-                                                                {getBill?.items?.map((items, index) => (
-                                                                    <span key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}, </span>
+                                                                <p>
+                                                                    {timeString}, {`${day}-${month}-${year}`}
+                                                                </p>
+                                                            </td>
+
+                                                            <td>
+                                                                <p>
+                                                                    {item?.name || patient?.name}
+                                                                </p>
+                                                            </td>
+
+                                                            <td>
+                                                                {selectedServiceItems.map((serviceItem, index) => (
+                                                                    <span
+                                                                        key={index}
+                                                                        style={{margin:'5px 0'}}
+                                                                    >
+                                                                        {serviceItem?.name},
+                                                                    </span>
                                                                 ))}
                                                             </td>
-                                                            <td><p>{!getBill?.totalPrice ? formatted.format(getBill?.items[0]?.totalPrice) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+
+                                                            <td>
+                                                                <p>
+                                                                    {formatted.format(selectedServiceTotal)}
+                                                                </p>
+                                                            </td>
+
+                                                            <td>
+                                                                <p>{item?.mode}</p>
+                                                            </td>
+
                                                         </tr>
                                                     </tbody>
-                                                )  
-                                            }else{
+                                            )}else if(
+                                                [
+                                                    'CHURCH',
+                                                    'BLOOD',
+                                                    'OXYGEN',
+                                                    'PROFESSIONAL',
+                                                    'NURSING',
+                                                    'BED',
+                                                    'DELIVERY FEES',
+                                                    'PROCEDURE FEES',
+                                                    'discount'
+                                                ].includes(sort) &&
+                                                selectedServiceItems.length > 0
+                                            ){
+                                                return(
+                                                    <tbody key={i}>
+                                                        <tr>
+
+                                                            <td>
+                                                                <p>
+                                                                    {timeString}, {`${day}-${month}-${year}`}
+                                                                </p>
+                                                            </td>
+
+                                                            <td>
+                                                                <p>
+                                                                    {item?.name || patient?.name}
+                                                                </p>
+                                                            </td>
+
+                                                            <td>
+                                                                {selectedServiceItems.map((serviceItem, index) => (
+                                                                    <span
+                                                                        key={index}
+                                                                        style={{margin:'5px 0'}}
+                                                                    >
+                                                                        {serviceItem?.name},
+                                                                    </span>
+                                                                ))}
+                                                            </td>
+
+                                                            <td>
+                                                                <p>
+                                                                    {formatted.format(selectedServiceTotal)}
+                                                                </p>
+                                                            </td>
+
+                                                            <td>
+                                                                <p>{item?.mode}</p>
+                                                            </td>
+
+                                                        </tr>
+                                                    </tbody>
+                                                )}
+                                            else{
                                                 return null
                                             }
 

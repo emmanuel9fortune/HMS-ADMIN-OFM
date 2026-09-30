@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import AdminBar from '../../components/AdminBar'
-import Audits from './Audits'
+// import Audits from './Audits'
 import Expenses from './Expenses'
+import Audits from './newAudit'
 
 function TransactionHistory() {
 
@@ -879,6 +880,10 @@ function TransactionHistory() {
             </div>
           }
 
+          {/* {
+            count === 1 &&
+            <Audits setenddate1={setenddate} setdate1={setdate} getPending1={getPending} setsort1={setsort} getPatient1={getPatient} handlePeriodByMonth1={handlePeriodByMonth1} />
+          } */}
           {
             count === 1 &&
             <Audits setenddate1={setenddate} setdate1={setdate} getPending1={getPending} setsort1={setsort} getPatient1={getPatient} handlePeriodByMonth1={handlePeriodByMonth1} />

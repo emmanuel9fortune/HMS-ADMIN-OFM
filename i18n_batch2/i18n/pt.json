@@ -1,0 +1,80 @@
+{
+  "home": {
+    "header": {
+      "text1": "Sobre nós",
+      "text2": "Portfólio",
+      "text3": "Como funciona",
+      "text4": "Login do investidor",
+      "text5": "Insights",
+      "text6": "Contato"
+    },
+    "banner": {
+      "banner_txt1": "Worldcrest Real Estate Income Trust",
+      "banner_txt2": "WREIT",
+      "banner_txt3": "Levando o poder da Worldcrest Real Estate a investidores individuais"
+    },
+    "class": {
+      "option1": "Classe I",
+      "class1_txt1": "Retorno anualizado desde janeiro de 2017",
+      "class1_txt2": "Taxa de distribuição anualizada",
+      "class1_txt3": "Preço da transação",
+      "class1_txt4": "Valor líquido dos ativos",
+      "option2": "Classe S",
+      "option3": "Classe T",
+      "option4": "Classe D"
+    },
+    "feat": {
+      "text1": "",
+      "text2": "Investimentos em destaque",
+      "text3": "Residencial",
+      "text8": "Hospitalidade",
+      "text4": "Saúde",
+      "text5": "Industrial",
+      "text6": "Escritórios comerciais",
+      "text7": "Varejo"
+    },
+    "latest": {
+      "text1": "Últimas do WREIT",
+      "text2": "Últimas notícias e perspectivas do WREIT",
+      "text3": "INSIGHTS WORLDCREST",
+      "text4": "DESEMPENHO INTERINO",
+      "text5": "POR QUE WREIT AGORA",
+      "text6": "PARA ACIONISTAS",
+      "text7": "A Worldcrest continua a entregar desempenho estável baseado em renda.",
+      "text8": "Desempenho estável em logística, residencial e infraestrutura digital.",
+      "text9": "Os mercados globais estão em reconfiguração."
+    },
+    "invest": {
+      "text1": "Entregando valor para investidores",
+      "text2": "O poder do imobiliário no seu portfólio",
+      "text3": "O WREIT oferece fortes retornos desde o início.",
+      "text4": "Nosso desempenho",
+      "text5": "Portfólio das nossas melhores ideias",
+      "text6": "Concentração em setores com demanda estrutural.",
+      "text7": "Nosso portfólio",
+      "text8": "Desbloqueie o poder da escala",
+      "text9": "Acesso ao Worldcrest Real Estate para investidores individuais.",
+      "text10": "Por que investir no WREIT",
+      "text11": "Construir riqueza com a Worldcrest",
+      "text12": "Investir envolve riscos, incluindo perda de capital"
+    },
+    "sub": {
+      "text1": "Identificar tendências cedo impulsiona desempenho superior.",
+      "text2": "Lee Mi-Kyung",
+      "text3": "Presidente e CEO",
+      "text4": "Por que investir no WREIT",
+      "text5": "Nossa abordagem de investimento diferencia o WREIT."
+    },
+    "btm": {
+      "text1": "SERVIÇOS",
+      "text2": "Portfólio",
+      "text3": "Insights",
+      "text4": "LINKS RÁPIDOS",
+      "text5": "Início",
+      "text6": "Sobre nós",
+      "text7": "Contato",
+      "text8": "Como funciona",
+      "text9": "Termos e condições"
+    }
+  }
+}
