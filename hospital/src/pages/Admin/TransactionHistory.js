@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import AdminBar from '../../components/AdminBar'
-// import Audits from './Audits'
+import Audits from './Audits'   
 import Expenses from './Expenses'
-import Audits from './newAudit'
+// import Audits from './newAudit'
 
 function TransactionHistory() {
 

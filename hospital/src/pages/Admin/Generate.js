@@ -103,7 +103,9 @@ export const generatePaymentReportPDF = (
 
       let purpose = "";
       let amount = 0;
-      const getBill = JSON.parse(item?.services);
+      const getBill = typeof item.services === "string"
+                      ? JSON.parse(item.services)
+                      : item.services;
 
       if (isLab || isScan) {
         const getTotal = Array.isArray(getBill)
@@ -114,9 +116,18 @@ export const generatePaymentReportPDF = (
           : getBill.testname || "";
         amount = getTotal;
       } else {
-        const getBill = JSON.parse(item?.services);
-        purpose = getBill?.items?.map((x) => x.name || x.drugs).join(", ");
-        amount = getBill?.totalPrice || getBill?.items?.[0]?.totalPrice || 0;
+        const getBill = typeof item.services === "string"
+                        ? JSON.parse(item.services)
+                        : item.services;
+
+        const getTotal = Array.isArray(getBill)
+                          ? getBill.reduce((sum, service) => {
+                              const price = Number(service?.price);
+
+                              return sum + (Number.isFinite(price) ? price : 0);
+                          }, 0): 0;
+        purpose = getBill?.items?.length > 0 ? getBill?.items?.map((x) => x.name || x.drugs).join(", ") : getBill?.map((x) => x.name || x.drugs).join(", ");
+        amount = getBill?.totalPrice || getBill?.items?.[0]?.totalPrice || getTotal || 0;
       }
 
       const mode = status !== 'DEBTORS' ? item?.mode || "" : "";
@@ -128,6 +139,7 @@ export const generatePaymentReportPDF = (
         (sortType === "utils"  && getBill?.profit === 0) ||
         (sortType === "consumables" && getBill?.profit !== 0) ||
         (sortType === "CHURCH" ) ||
+        (sortType === "service" ) ||
         (sortType === "payout" ) ||
         (sortType === "drugs" &&
           !purpose.toLowerCase().includes("card") &&

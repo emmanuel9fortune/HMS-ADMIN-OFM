@@ -288,7 +288,7 @@ async function connectWithRetry() {
             );
 
 
-            await migrateBillRequests();
+            // await migrateBillRequests();
 
 
             console.log(

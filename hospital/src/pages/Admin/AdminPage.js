@@ -75,8 +75,8 @@ function AdminPage() {
           <Route path='/deletecosumable' element={<Paymentdesk/>} />
           <Route path='/addroster' element={<Roster/>} />
           <Route path='/Laboratory' element={<Lab/>} />
-          {/* <Route path='/audit' element={<Audit/>} /> */}
-          <Route path='/audit' element={<Audits/>} />
+          <Route path='/audit' element={<Audit/>} />
+          {/* <Route path='/audit' element={<Audits/>} /> */}
           <Route path='/editreceipt' element={<EditReceipt/>} />
           <Route path='/data_analyst' element={<DataAnalyst/>} />
           <Route path='/patient_stats' element={<PatientStatistics/>} />

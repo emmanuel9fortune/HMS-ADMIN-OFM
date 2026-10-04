@@ -365,6 +365,168 @@ router.post('/', async(req, res) => {
                }
             }
 
+        }else if(sorts === 'service') {
+
+            const { serviceCategory } = req.body;
+
+            const query = {
+                timeStamp: {
+                    $gte: unix,
+                    $lte: eunix
+                }
+            };
+
+            if (mode) {
+                query.mode = mode;
+            }
+
+
+            // If a specific staff member was selected
+            if (id) {
+                query.staff = id;
+            }
+
+            const bills = await billRequests.find(query);
+
+            // Your dropdown category -> words/names to search for
+            const categoryMap = {
+                BLOOD: [
+                    'blood'
+                ],
+
+                OXYGEN: [
+                    'oxygen'
+                ],
+
+                PROFESSIONAL: [
+                    'professional fee',
+                    'professional fees'
+                ],
+
+                NURSING: [
+                    'nursing care'
+                ],
+
+                BED: [
+                    'bed fee',
+                    'bed fees'
+                ],
+
+                'DELIVERY FEES': [
+                    'delivery fee',
+                    'delivery fees'
+                ],
+
+                'PROCEDURE FEES': [
+                    'procedure fee',
+                    'Procedure Fee'
+                ],
+
+                discount: [
+                    'discount'
+                ]
+            };
+
+            const searchTerms = categoryMap[serviceCategory] || [];
+
+            const results = [];
+
+            for (const bill of bills) {
+
+                let services;
+
+                try {
+                    services = typeof bill.services === 'string'
+                        ? JSON.parse(bill.services)
+                        : bill.services;
+                } catch (error) {
+                    continue;
+                }
+
+                let items = [];
+
+                // Most of your records have:
+                // services: { items: [...] }
+                if (services && Array.isArray(services.items)) {
+                    items = services.items;
+                }
+
+                // Some records have:
+                // services: [...]
+                else if (Array.isArray(services)) {
+                    items = services;
+                }
+
+                // Find matching service items
+                const matchingItems = items.filter(item => {
+
+                    const serviceName = (
+                        item.name ||
+                        item.testname ||
+                        item.drugs ||
+                        ''
+                    ).toLowerCase().trim();
+
+                    return searchTerms.some(term =>
+                        serviceName.includes(term.toLowerCase())
+                    );
+                });
+
+                if (matchingItems.length > 0) {
+
+                    results.push({
+                        billId: bill._id,
+                        uid: bill.uid,
+
+                        // Who generated/sent the bill
+                        staff: bill.staff,
+
+                        // Responsible nurse/doctor
+                        nurseID: bill.nurseID,
+                        doctorID: bill.doctorID,
+
+                        type: bill.type,
+                        name: bill.name,
+
+                        status: bill.status,
+                        mode: bill.mode,
+                        timeStamp: bill.timeStamp,
+
+                        // Only the requested services
+                        services: matchingItems
+                    });
+                }
+            }
+
+            // Get patients
+            const patientIds = results
+                .map(item => item.uid)
+                .filter(Boolean);
+
+            const getPatients = await Patient.find({
+                _id: {
+                    $in: [...new Set(patientIds)]
+                }
+            });
+
+            // Get staff
+            const staffIds = results
+                .map(item => item.staff)
+                .filter(Boolean);
+
+            const getStaffs = await staff.find({
+                _id: {
+                    $in: [...new Set(staffIds)]
+                }
+            });
+
+            return res.json({
+                status: 'success',
+                category: serviceCategory,
+                bills: results,
+                getPatients,
+                getStaffs
+            });
         }else {
             if(id){
                 const bills = await billRequests.find(

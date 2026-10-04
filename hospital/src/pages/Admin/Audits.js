@@ -39,6 +39,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
     },[])
 
     const [sort, setsort] = useState('')
+    const [categories, setcategories] = useState('')
 
     const [isLoadingData, setIsLoadingData] = useState(false);
     const [isCalculating, setIsCalculating] = useState(false);
@@ -61,6 +62,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                         unix: date,
                         eunix: enddate,
                         sorts: sort,
+                        serviceCategory: categories,
                         mode,
                         staff
                     },
@@ -71,12 +73,19 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
                 if (res.data.status === 'success') {
                     setgetPatient(res.data.getPatients || []);
-                    setgetComplete(res.data.paidBlls || []);
+
+                    if(sort === 'service'){
+                        setgetComplete(res.data.bills || []);
+                    }else{
+                        setgetComplete(res.data.paidBlls || []);
+                    }
+
                     setexpenses(res.data.expense || []);
                     setstaffs(res.data.staffs || []);
                     setdebtors(res.data.debtBills || []);
                     setawaiting(res.data.pharmBills || []);
                 }
+                console.log('Audit data fetched successfully:', res.data);
 
             } catch (error) {
                 if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
@@ -93,7 +102,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
         return () => controller.abort();
 
-    }, [date, enddate, cip, sort, mode, staff]);
+    }, [date, enddate, cip, sort, mode, staff, categories]);
 
     const handleDate = (e) => {
         const raw = e.target.value;
@@ -333,6 +342,10 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         setsort(e.target.value)
     }
 
+    const handleService1=(e)=>{
+        setcategories(e.target.value)
+    }
+
 
     const handlePeriodByyEAR = async(e) => {
        const year = Number(e.target.value); // e.g., 2025 selected from dropdown
@@ -421,7 +434,9 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         let sevtotal = 0
 
         getComplete?.forEach(obj =>{
-            const items = JSON.parse(obj.services)
+            const items = typeof obj.services === "string"
+                    ? JSON.parse(obj.services)
+                    : obj.services;
             
             items?.items?.forEach(item => {
                 const name = item?.name ? item?.name?.toLowerCase() : item?.drugs?.toLowerCase()
@@ -467,7 +482,9 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         let sevtotal = 0
 
         pending?.forEach(obj =>{
-            const items = JSON.parse(obj.services)
+            const items = typeof obj.services === "string"
+                    ? JSON.parse(obj.services)
+                    : obj.services;
             
             items?.items?.forEach(item => {
                 const name = item?.name ? item?.name?.toLowerCase() : item?.drugs?.toLowerCase()
@@ -513,8 +530,10 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         let sevtotal = 0
 
         awaiting?.forEach(obj =>{
-            const items = JSON.parse(obj.services)
-            
+            const items = typeof obj.services === "string"
+                    ? JSON.parse(obj.services)
+                    : obj.services;
+
             items?.items?.forEach(item => {
                 const name = item?.name ? item?.name?.toLowerCase() : item?.drugs?.toLowerCase()
                 
@@ -559,8 +578,10 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         let sevtotal = 0
 
         debtors?.forEach(obj =>{
-            const items = JSON.parse(obj.services)
-            
+            const items = typeof obj.services === "string"
+                ? JSON.parse(obj.services)
+                : obj.services;
+
             items?.items?.forEach(item => {
                 const name = item?.name ? item?.name?.toLowerCase() : item?.drugs?.toLowerCase()
                 
@@ -594,6 +615,50 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         setdocTotal3(sixtotal)
         setchurchTotal3(sevtotal)
     },[debtors, sort, status])
+
+    const serviceCategoryTotal = useMemo(() => {
+        if (sort !== 'service') return 0;
+
+        return (getComplete || []).reduce((grandTotal, bill) => {
+            let services = bill?.services;
+
+            try {
+                if (typeof services === 'string') {
+                    services = JSON.parse(services);
+                }
+            } catch {
+                return grandTotal;
+            }
+
+            if (!Array.isArray(services)) return grandTotal;
+
+            const billTotal = services.reduce((total, service) => {
+                const price = Number(service?.totalPrice ?? service?.price ?? 0);
+                const quantity = Number(service?.quantity ?? 1);
+
+                // If totalPrice already represents the line total,
+                // don't multiply it again.
+                const amount = service?.totalPrice != null
+                    ? price
+                    : price * quantity;
+
+                return total + (Number.isFinite(amount) ? amount : 0);
+            }, 0);
+
+            return grandTotal + billTotal;
+        }, 0);
+    }, [getComplete, sort]);
+
+    const displayTotal =
+    sort === 'service'
+        ? serviceCategoryTotal
+        : status === 'PAID'
+        ? totalPrice
+        : status === 'PENDING'
+        ? totalPrice1
+        : status === 'AWAITING'
+        ? totalPrice2
+        : totalPrice3;
 
     const currentYear = new Date().getFullYear();
     const startYear = 2025; // or the first year your app started saving data
@@ -658,6 +723,57 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
     }
 
     const [searchText, setsearchText] = useState('')
+    const serviceCategoryNames = {
+        BLOOD: 'Blood Service',
+        OXYGEN: 'Oxygen Services',
+        PROFESSIONAL: 'Professional Fees',
+        NURSING: 'Nursing Care',
+        BED: 'Bed Fees',
+        'DELIVERY FEES': 'Delivery Fees',
+        'PROCEDURE FEES': 'Procedure Fees',
+        discount: 'Discount'
+    };
+
+    const serviceNames = {
+        '': 'All Services',
+        drugs: 'Drugs',
+        utils: 'Utilities',
+        consumables: 'Consumables',
+        cards: 'Cards',
+        consultation: 'Consultations',
+        lab: 'Tests',
+        scan: 'Scans',
+        payout: 'Pay Outs',
+        CHURCH: 'Church',
+        service: 'Services'
+    };
+
+    const statusNames = {
+        PAID: 'Paid',
+        PENDING: 'Pending',
+        DEBTORS: 'Debtors',
+        AWAITING: 'Pharmacy'
+    };
+
+    const activeServiceName =
+        sort === 'service'
+            ? serviceCategoryNames[categories] || 'All Service Categories'
+            : serviceNames[sort] || 'All Services';
+
+    const currentData =
+        sort === 'service'
+            ? getComplete
+            : status === 'PAID'
+            ? getComplete
+            : status === 'PENDING'
+            ? pending
+            : status === 'AWAITING'
+            ? awaiting
+            : status === 'DEBTORS'
+            ? debtors
+            : [];
+
+    const auditTransactionCount = currentData?.length || 0;
 
     const data = getComplete?.lenght > 0 ? getComplete : pending?.length > 0 ? pending : awaiting?.length > 0 ? awaiting : debtors?.length > 0 ? debtors : []
 
@@ -705,13 +821,15 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         
     }
 
+    // console.log(getComplete);
+    
     
     
   return (
         <div style={{width:'100%'}} >
             <h3>COMPLETED TRANSACTION HISTORY</h3>
 
-            <div style={{display:'flex', alignItems:'center', width:'100%'}}>
+            {/* <div style={{display:'flex', alignItems:'center', width:'100%'}}>
                 <div className='patient_details_input_field1_in_' >
                     <div className='patient_details_input_field1_' style={{margin:'0 5px'}}>
                         <h4>CHOOSE DATE</h4>
@@ -773,16 +891,27 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                             <option value={'scan'}>SCANS</option>
                             <option value={'payout'}>PAY OUTS</option>
                             <option value={'CHURCH'}>CHURCH</option>
-                            <option value={'BLOOD'}>BLOOD SERVICE</option>
-                            <option value={'OXYGEN'}>OXYGEN SERVICES</option>
-                            <option value={'PROFESSIONAL'}>PROFESSIONAL FEES</option>
-                            <option value={'NURSING'}>NURSING CARE</option>
-                            <option value={'BED'}>BED FEES</option>
-                            <option value={'DELIVERY FEES'}>DELIVERY FEES</option>
-                            <option value={'PROCEDURE FEES'}>PROCEDURE FEES</option>
-                            <option value={'discount'}>DISCOUNT</option>
+                            <option value={'service'}>SERVICES</option>
                         </select>
                     </div>
+                    
+                    {
+                        sort === 'service' &&
+                        <div className='patient_details_input_field1_' style={{margin:'0 5px'}}>
+                            <h4>CHOOSE CATEGORIES</h4>
+                            <select onChange={handleService1} >
+                                <option value={''}>ALL</option>
+                                <option value={'BLOOD'}>BLOOD SERVICE</option>
+                                <option value={'OXYGEN'}>OXYGEN SERVICES</option>
+                                <option value={'PROFESSIONAL'}>PROFESSIONAL FEES</option>
+                                <option value={'NURSING'}>NURSING CARE</option>
+                                <option value={'BED'}>BED FEES</option>
+                                <option value={'DELIVERY FEES'}>DELIVERY FEES</option>
+                                <option value={'PROCEDURE FEES'}>PROCEDURE FEES</option>
+                                <option value={'discount'}>DISCOUNT</option>
+                            </select>
+                        </div>
+                    }
 
                     <div className='patient_details_input_field1_' style={{margin:'0 5px'}}>
                         <h4>MODE OF PAYMENT</h4>
@@ -805,17 +934,363 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                     </div>
 
                 </div>
-            </div>
+            </div> */}
 
             
-            <div style={{display:'flex', alignItems:'center', width:'100%', marginTop:'30px'}}>
+
+            
+            {/* <div style={{display:'flex', alignItems:'center', width:'100%', marginTop:'30px'}}>
                 <button onClick={handleDownload} className={'dashboard_body_patient_details_btns_'} style={{}}>DOWNLOAD</button>          
 
                 <div style={{display:'flex', margin:'0 20px', alignItems:'center'}} >
                     <input style={{padding:'15px'}} value={searchText} onChange={(e)=> setsearchText(e.target.value)} placeholder='Enter Search' />
                     <button style={{padding:'15px'}} onClick={handleFiltered} >SEARCH</button>
                 </div>      
-            </div>
+            </div> */}
+
+            <div className="audit-page">
+
+                {/* HEADER */}
+                <div className="audit-header">
+                    <div>
+                        <span className="audit-eyebrow">FINANCIAL MANAGEMENT</span>
+                        <h2>Audit & Transactions</h2>
+                        <p>
+                            Review, filter and analyze transaction activity across the facility.
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={handleDownload}
+                        className="audit-download-btn"
+                    >
+                        <span>↓</span>
+                        Download Report
+                    </button>
+                </div>
+
+
+                {/* FILTER PANEL */}
+                <div className="audit-filter-card">
+
+                    <div className="audit-filter-heading">
+                        <div>
+                            <h3>Filter Transactions</h3>
+                            <p>Choose the criteria you want to review.</p>
+                        </div>
+
+                        <div className="audit-filter-status">
+                            <span className="audit-status-dot"></span>
+                            Filters Active
+                        </div>
+                    </div>
+
+
+                    <div className="audit-filter-grid">
+
+                        {/* DATE */}
+                        <div className="audit-field">
+                            <label>DATE</label>
+                            <input
+                                value={xdate}
+                                onChange={handleDate}
+                                type="date"
+                            />
+                        </div>
+
+
+                        {/* PERIOD */}
+                        <div className="audit-field">
+                            <label>PERIOD</label>
+                            <select onChange={handlePeriod}>
+                                <option value={7}>SELECT PERIOD</option>
+                                <option value={7}>LAST WEEK</option>
+                                <option value={31}>LAST MONTH</option>
+                                <option value={62}>LAST TWO MONTHS</option>
+                                <option value={186}>LAST SIX MONTHS</option>
+                                <option value={356}>YEAR</option>
+                            </select>
+                        </div>
+
+
+                        {/* MONTH */}
+                        <div className="audit-field audit-month-field">
+                            <label>MONTH</label>
+
+                            <MonthAudit
+                                setdebtors={setdebtors}
+                                setdate={setdate}
+                                setenddate={setenddate}
+                                setsort={setsort}
+                                setdate1={setdate1}
+                                setenddate1={setenddate1}
+                                setsort1={setsort1}
+                                setgetPatient={setgetPatient}
+                                setgetComplete={setgetComplete}
+                                setexpenses={setexpenses}
+                                setstaffs={setstaffs}
+                                setpending={setpending}
+                                setawaiting={setawaiting}
+                                sort={sort}
+                                staff={staff}
+                                handlePeriodByMonth1={handlePeriodByMonth1}
+                            />
+                        </div>
+
+
+                        {/* STAFF */}
+                        <div className="audit-field">
+                            <label>STAFF</label>
+                            <select onChange={handleStaff}>
+                                <option value="">ALL STAFF</option>
+
+                                {staffs?.map((itm, i) => (
+                                    <option value={itm?._id} key={i}>
+                                        {itm?.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+
+                        {/* YEAR */}
+                        <div className="audit-field">
+                            <label>YEAR</label>
+                            <select onChange={handlePeriodByyEAR}>
+                                <option>CHOOSE YEAR</option>
+
+                                {years?.map((year) => (
+                                    <option key={year} value={year}>
+                                        {year}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+
+                        {/* SERVICE */}
+                        <div className="audit-field">
+                            <label>SERVICE TYPE</label>
+                            <select onChange={handleService}>
+                                <option value="">ALL SERVICES</option>
+                                <option value="drugs">DRUGS</option>
+                                <option value="utils">UTILITIES</option>
+                                <option value="consumables">CONSUMABLES</option>
+                                <option value="cards">CARDS</option>
+                                <option value="consultation">CONSULTATIONS</option>
+                                <option value="lab">TESTS</option>
+                                <option value="scan">SCANS</option>
+                                <option value="payout">PAY OUTS</option>
+                                <option value="CHURCH">CHURCH</option>
+                                <option value="service">SERVICES</option>
+                            </select>
+                        </div>
+
+
+                        {/* CATEGORY */}
+                        {sort === 'service' && (
+                            <div className="audit-field audit-category-field">
+                                <label>SERVICE CATEGORY</label>
+
+                                <select onChange={handleService1}>
+                                    <option value="">ALL CATEGORIES</option>
+                                    <option value="BLOOD">BLOOD SERVICE</option>
+                                    <option value="OXYGEN">OXYGEN SERVICES</option>
+                                    <option value="PROFESSIONAL">
+                                        PROFESSIONAL FEES
+                                    </option>
+                                    <option value="NURSING">NURSING CARE</option>
+                                    <option value="BED">BED FEES</option>
+                                    <option value="DELIVERY FEES">
+                                        DELIVERY FEES
+                                    </option>
+                                    <option value="PROCEDURE FEES">
+                                        PROCEDURE FEES
+                                    </option>
+                                    <option value="discount">DISCOUNT</option>
+                                </select>
+                            </div>
+                        )}
+
+
+                        {/* PAYMENT MODE */}
+                        <div className="audit-field">
+                            <label>PAYMENT MODE</label>
+
+                            <select
+                                onChange={(e) => setmode(e.target.value)}
+                            >
+                                <option value="">ALL MODES</option>
+                                <option value="pos">POS</option>
+                                <option value="transfer">TRANSFER</option>
+                                <option value="cash">CASH</option>
+                            </select>
+                        </div>
+
+
+                        {/* STATUS */}
+                        <div className="audit-field">
+                            <label>STATUS</label>
+
+                            <select onChange={handleStatus}>
+                                <option value="PAID">PAID</option>
+                                <option value="PENDING">PENDING</option>
+                                <option value="DEBTORS">DEBTORS</option>
+                                <option value="AWAITING">PHARMACY</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+
+                    {/* ACTIVE FILTERS */}
+                    <div className="audit-active-filters">
+
+                        <span className="active-filter-title">
+                            Current view:
+                        </span>
+
+                        <span className="filter-chip">
+                            {serviceNames[sort] || 'All Services'}
+                        </span>
+
+                        {sort === 'service' && categories && (
+                            <span className="filter-chip">
+                                {serviceCategoryNames[categories]}
+                            </span>
+                        )}
+
+                        {mode && (
+                            <span className="filter-chip">
+                                {mode.toUpperCase()}
+                            </span>
+                        )}
+
+                        <span className="filter-chip">
+                            {statusNames[status]}
+                        </span>
+
+                        {staff && (
+                            <span className="filter-chip">
+                                Staff selected
+                            </span>
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                {/* SEARCH */}
+                <div className="audit-search-row">
+
+                    <div className="audit-search-box">
+
+                        <span className="audit-search-icon">⌕</span>
+
+                        <input
+                            value={searchText}
+                            onChange={(e) => setsearchText(e.target.value)}
+                            placeholder="Search patient, service or transaction..."
+                        />
+
+                        {searchText && (
+                            <button
+                                onClick={() => {
+                                    setsearchText('');
+                                    setfilteredData([]);
+                                }}
+                                className="audit-clear-search"
+                            >
+                                ×
+                            </button>
+                        )}
+
+                    </div>
+
+                    <button
+                        onClick={handleFiltered}
+                        className="audit-search-btn"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                {/* SUMMARY */}
+                <div className="audit-summary-grid">
+
+                    <div className="audit-summary-card audit-summary-main">
+
+                        <div className="audit-summary-icon">
+                            ₦
+                        </div>
+
+                        <div style={{display:'flex', flexDirection:'column', alignItems:'flex-start'}} >
+                            <span>Total Amount</span>
+
+                            <strong>
+                                {totalFormatted.format(displayTotal || 0)}
+                            </strong>
+
+                            <small>
+                                {sort === 'service'
+                                    ? activeServiceName
+                                    : statusNames[status]
+                                }
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div className="audit-summary-card">
+
+                        <span>Transactions</span>
+
+                        <strong>
+                            {auditTransactionCount}
+                        </strong>
+
+                        <small>
+                            Records found
+                        </small>
+
+                    </div>
+
+
+                    <div className="audit-summary-card">
+
+                        <span>Status</span>
+
+                        <strong className="audit-summary-status">
+                            {statusNames[status]}
+                        </strong>
+
+                        <small>
+                            Current report
+                        </small>
+
+                    </div>
+
+
+                    <div className="audit-summary-card">
+
+                        <span>Service</span>
+
+                        <strong className="audit-service-value">
+                            {activeServiceName}
+                        </strong>
+
+                        <small>
+                            Selected category
+                        </small>
+
+                    </div>
+
+                </div>
+            </div>    
 
             {isBusy && (
                 <div className="audit_results_loading">
@@ -857,7 +1332,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                         : sort === 'drugs' ?
                             <h4>Total Income Made {totalFormatted.format(docTotal)}</h4>
                         : <div style={{width:'100%', display:'flex', alignItems:'center'}}>
-                            <h4 style={{margin:'0 10px'}}>Total Income Made {totalFormatted.format(totalPrice)}</h4>
+                            <h4 style={{margin:'0 10px'}}>Total Income Made {totalFormatted.format(totalPrice > 0 ? totalPrice : displayTotal)}</h4>
                             <h4 style={{color:'red', margin:'0 10px'}}>Total Expenses {totalFormatted.format(Total)}</h4>
                             <h4 style={{margin:'0 10px'}}>Total Profit {totalFormatted.format(totalPrice - Total)}</h4>
                         </div>
@@ -937,7 +1412,9 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
                                         if(item?.type !== 'lab' && item?.type !== 'scan'){
                                             
-                                            const getBill = JSON.parse(item?.services) 
+                                            const getBill = typeof item.services === "string"
+                                                ? JSON.parse(item.services)
+                                                : item.services;
 
                                             const formatted = new Intl.NumberFormat('en-NG', {
                                                 style: 'currency',
@@ -969,7 +1446,9 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                             const getconsult = getBill?.items?.filter((items)=> items?.name?.toLowerCase().includes('consultation'))
                                             const getdrugs = getBill?.items?.filter((items)=> !items?.name?.toLowerCase().includes('consultation') && !items?.name?.toLowerCase().includes('card'))
 
-                                            const parsed = JSON.parse(item.services);
+                                            const parsed = typeof item.services === "string"
+                                                ? JSON.parse(item.services)
+                                                : item.services;
 
                                             const serviceItems = parsed?.items || [];
 
@@ -1103,6 +1582,31 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                         </tr>
                                                     </tbody>
                                                 )  
+                                            }else if(sort === 'service'){
+                                                const getTotal = Array.isArray(getBill)
+                                                ? getBill.reduce((sum, service) => {
+                                                    const price = Number(service?.price);
+
+                                                    return sum + (Number.isFinite(price) ? price : 0);
+                                                }, 0)
+                                                : 0;
+
+                                                return(
+                                                    <tbody key={i}>
+                                                        <tr>
+                                                            
+                                                            <td><p>{timeString}, {`${day}-${month}-${year}`}</p></td>
+                                                            <td><p>{item?.name || patient?.name}</p></td>
+                                                            <td>
+                                                                {parsed?.length && parsed?.map((items, index) => (
+                                                                    <span key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}, </span>
+                                                                ))}
+                                                            </td>
+                                                            <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td>
+                                                            <td><p>{item?.mode}</p></td>
+                                                        </tr>
+                                                    </tbody>
+                                                )  
                                             }else if(
                                                 sort === 'CHURCH' &&
                                                 selectedServiceItems.length > 0
@@ -1206,12 +1710,25 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
                                                                 
                                         }else if(item?.type === 'lab'){
-                                            const getBill = JSON.parse(item?.services) 
-                                            const getTotal = getBill?.length > 0  ? getBill?.reduce((sum, item)=> sum + item.price, 0) : 0
+                                            const getBill = typeof item.services === "string"
+                                                ? JSON.parse(item.services)
+                                                : item.services;
+                                            const getTotal = Array.isArray(getBill)
+                                                ? getBill.reduce((sum, service) => {
+                                                    const price = Number(service?.price);
 
-                                            const formatted5 = new Intl.NumberFormat('en-NG', {
-                                                style: 'currency',
-                                                currency: 'NGN',
+                                                    return sum + (Number.isFinite(price) ? price : 0);
+                                                }, 0)
+                                                : 0;
+                                            
+                                                // console.log("SERVICES:", getBill);
+                                                // console.log("PRICES:", getBill?.map(x => x?.price));
+                                                // console.log("NUMBERS:", getBill?.map(x => Number(x?.price)));
+                                                
+
+                                            const formatted5 = new Intl.NumberFormat("en-NG", {
+                                                style: "currency",
+                                                currency: "NGN",
                                                 minimumFractionDigits: 0,
                                                 maximumFractionDigits: 0
                                             }).format(getTotal);
