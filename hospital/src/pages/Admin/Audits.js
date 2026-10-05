@@ -85,7 +85,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                     setdebtors(res.data.debtBills || []);
                     setawaiting(res.data.pharmBills || []);
                 }
-                console.log('Audit data fetched successfully:', res.data);
+                // console.log('Audit data fetched successfully:', res.data);
 
             } catch (error) {
                 if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
@@ -775,7 +775,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
     const auditTransactionCount = currentData?.length || 0;
 
-    const data = getComplete?.lenght > 0 ? getComplete : pending?.length > 0 ? pending : awaiting?.length > 0 ? awaiting : debtors?.length > 0 ? debtors : []
+    const data = getComplete?.length > 0 ? getComplete : pending?.length > 0 ? pending : awaiting?.length > 0 ? awaiting : debtors?.length > 0 ? debtors : []
 
 
     const [filteredData, setfilteredData] = useState([])
@@ -803,27 +803,110 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
     }, [data]);
 
 
-    const handleFiltered =()=>{
+    const handleFiltered = () => {
         const query = searchText.trim().toLowerCase();
 
+        // If the search box is empty, show all orders
         if (!query) {
             setfilteredData(normalizedOrders);
             return;
         }
 
-        const result = normalizedOrders.filter(order =>
-            order?.serviceItems?.some(item =>
-            item?.name?.toLowerCase().includes(query)
-            )
-        );
+        // Search through the service items in each order
+        const result = normalizedOrders.filter(order => {
+            const serviceItems = order?.serviceItems;
 
-        setfilteredData(result)
-        
-    }
+            if (!Array.isArray(serviceItems)) {
+                return false;
+            }
+
+            return serviceItems.some(item => {
+                const itemName = String(item?.name || '').toLowerCase();
+
+                return itemName.includes(query);
+            });
+        });
+
+        setfilteredData(result);
+    };
+
 
     // console.log(getComplete);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     
-    
+    // =========================
+    // FRONTEND TABLE PAGINATION
+    // =========================
+
+    const getPaginationSource = () => {
+        // Keep the same logic your table currently uses
+
+        if (filteredData?.length > 0) {
+            return filteredData;
+        }
+
+        if (status === 'PAID') {
+            return getComplete || [];
+        }
+
+        if (status === 'PENDING') {
+            return pending || [];
+        }
+
+        if (status === 'AWAITING') {
+            return awaiting || [];
+        }
+
+        if (status === 'DEBTORS') {
+            return debtors || [];
+        }
+
+        return [];
+    };  
+
+    const paginationSource = getPaginationSource();
+
+    const sortedPaginationSource = [...paginationSource].sort(
+        (a, b) => Number(b?.timeStamp || 0) - Number(a?.timeStamp || 0)
+    );
+
+    const totalPages = Math.ceil(
+        sortedPaginationSource.length / rowsPerPage
+    );
+
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+
+    const paginatedData = sortedPaginationSource.slice(
+        startIndex,
+        endIndex
+    );
+
+    // Keep page valid when data/filter/status changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [
+        status,
+        sort,
+        categories,
+        mode,
+        staff,
+        date,
+        enddate,
+        filteredData.length,
+        getComplete.length,
+        pending.length,
+        awaiting.length,
+        debtors.length
+    ]);
+
+    useEffect(() => {
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        }
+    }, [currentPage, totalPages]);
+
     
   return (
         <div style={{width:'100%'}} >
@@ -1191,7 +1274,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                         <input
                             value={searchText}
                             onChange={(e) => setsearchText(e.target.value)}
-                            placeholder="Search patient, service or transaction..."
+                            placeholder="Search bill..."
                         />
 
                         {searchText && (
@@ -1394,6 +1477,116 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                     }
                 </div>   
 
+                {paginationSource.length > 0 && (
+                    <div className="audit-pagination">
+
+                        <div className="audit-pagination-info">
+                            <span>
+                                Showing{" "}
+                                <strong>
+                                    {Math.min(startIndex + 1, sortedPaginationSource.length)}
+                                </strong>
+                                {" "}–{" "}
+                                <strong>
+                                    {Math.min(endIndex, sortedPaginationSource.length)}
+                                </strong>
+                                {" "}of{" "}
+                                <strong>{sortedPaginationSource.length}</strong>
+                            </span>
+                        </div>
+
+                        <div className="audit-pagination-controls">
+
+                            <button
+                                type="button"
+                                className="audit-page-arrow"
+                                disabled={currentPage === 1}
+                                onClick={() =>
+                                    setCurrentPage(prev => Math.max(prev - 1, 1))
+                                }
+                            >
+                                ‹
+                            </button>
+
+                            {Array.from(
+                                { length: totalPages },
+                                (_, index) => index + 1
+                            )
+                                .filter(page => {
+                                    return (
+                                        page === 1 ||
+                                        page === totalPages ||
+                                        Math.abs(page - currentPage) <= 1
+                                    );
+                                })
+                                .map((page, index, pages) => {
+
+                                    const previousPage = pages[index - 1];
+
+                                    return (
+                                        <React.Fragment key={page}>
+
+                                            {previousPage &&
+                                                page - previousPage > 1 && (
+                                                    <span className="audit-page-dots">
+                                                        ...
+                                                    </span>
+                                                )}
+
+                                            <button
+                                                type="button"
+                                                className={`audit-page-number ${
+                                                    currentPage === page
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                                onClick={() => setCurrentPage(page)}
+                                            >
+                                                {page}
+                                            </button>
+
+                                        </React.Fragment>
+                                    );
+                                })}
+
+                            <button
+                                type="button"
+                                className="audit-page-arrow"
+                                disabled={currentPage === totalPages}
+                                onClick={() =>
+                                    setCurrentPage(prev =>
+                                        Math.min(prev + 1, totalPages)
+                                    )
+                                }
+                            >
+                                ›
+                            </button>
+
+                        </div>
+
+                        <div className="audit-rows-selector">
+
+                            <span>Rows</span>
+
+                            <select
+                                value={rowsPerPage}
+                                onChange={(e) => {
+                                    setRowsPerPage(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                            >
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={30}>30</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </select>
+
+                        </div>
+
+                    </div>
+                )}
+
                 <table border="1" className='custome_table'>
                     <thead>
                     <tr>
@@ -1408,7 +1601,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                         <>
                             {   status === 'PAID' &&
                                     getComplete?.length > 0 ?
-                                    getComplete?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
+                                    paginatedData?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
 
                                         if(item?.type !== 'lab' && item?.type !== 'scan'){
                                             
@@ -1462,6 +1655,16 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                     total + Number(serviceItem?.totalPrice || 0),
                                                 0
                                             );
+
+                                            const getTotal = Array.isArray(getBill)
+                                                ? getBill.reduce((sum, service) => {
+                                                    const price = Number(service?.price);
+
+                                                    return sum + (Number.isFinite(price) ? price : 0);
+                                                }, 0)
+                                                : 0;
+                                            
+                                                                                        
 
                                             if(getcard?.length > 0 && sort === 'cards'){
                                                 return(
@@ -1583,14 +1786,6 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                     </tbody>
                                                 )  
                                             }else if(sort === 'service'){
-                                                const getTotal = Array.isArray(getBill)
-                                                ? getBill.reduce((sum, service) => {
-                                                    const price = Number(service?.price);
-
-                                                    return sum + (Number.isFinite(price) ? price : 0);
-                                                }, 0)
-                                                : 0;
-
                                                 return(
                                                     <tbody key={i}>
                                                         <tr>
@@ -1607,9 +1802,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                         </tr>
                                                     </tbody>
                                                 )  
-                                            }else if(
-                                                sort === 'CHURCH' &&
-                                                selectedServiceItems.length > 0
+                                            }else if( sort === 'CHURCH' && selectedServiceItems.length > 0
                                             ){
                                                 return(
                                                     <tbody key={i}>
@@ -1703,9 +1896,39 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
                                                         </tr>
                                                     </tbody>
-                                                )}
-                                            else{
-                                                return null
+                                                )
+                                            }else{
+                                                return(
+                                                    <tbody key={i}>
+                                                        <tr>
+
+                                                            <td>
+                                                                <p>
+                                                                    {timeString}, {`${day}-${month}-${year}`}
+                                                                </p>
+                                                            </td>
+
+                                                            <td>
+                                                                <p>
+                                                                    {item?.name || patient?.name}
+                                                                </p>
+                                                            </td>
+
+                                                            <td>
+                                                                {getBill.items?.length && getBill.items?.map((items, index) => (
+                                                                    <p key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}, </p>
+                                                                ))}
+                                                            </td>
+                                                                
+                                                            <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td>
+
+                                                            <td>
+                                                                <p>{item?.mode}</p>
+                                                            </td>
+
+                                                        </tr>
+                                                    </tbody>
+                                                )
                                             }
 
                                                                 
@@ -1826,7 +2049,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                             }
                             {   status === 'PENDING' &&
                                     pending?.length > 0 ?
-                                    pending?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
+                                    paginatedData?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
 
                                         if(item?.type !== 'lab' && item?.type !== 'scan'){
                                             
@@ -2106,7 +2329,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                             }
                             {   status === 'AWAITING' &&
                                     awaiting?.length > 0 ?
-                                    awaiting?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
+                                    paginatedData?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
 
                                         if(item?.type !== 'lab' && item?.type !== 'scan'){
                                             
@@ -2387,7 +2610,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                             }
                             {   status === 'DEBTORS' &&
                                     debtors?.length > 0 ?
-                                    debtors?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
+                                    paginatedData?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
 
                                         if(item?.type !== 'lab' && item?.type !== 'scan'){
                                             
@@ -2679,7 +2902,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                         </>
                         :
                          filteredData?.length > 0 ?
-                            filteredData?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
+                            paginatedData?.sort((a, b)=> b.timeStamp - a.timeStamp).map((item, i)=>{
 
                                 if(item?.type !== 'lab' && item?.type !== 'scan'){
                                     
@@ -2959,6 +3182,117 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                         : null
                     }
                 </table>
+
+                
+                {paginationSource.length > 0 && (
+                    <div className="audit-pagination">
+
+                        <div className="audit-pagination-info">
+                            <span>
+                                Showing{" "}
+                                <strong>
+                                    {Math.min(startIndex + 1, sortedPaginationSource.length)}
+                                </strong>
+                                {" "}–{" "}
+                                <strong>
+                                    {Math.min(endIndex, sortedPaginationSource.length)}
+                                </strong>
+                                {" "}of{" "}
+                                <strong>{sortedPaginationSource.length}</strong>
+                            </span>
+                        </div>
+
+                        <div className="audit-pagination-controls">
+
+                            <button
+                                type="button"
+                                className="audit-page-arrow"
+                                disabled={currentPage === 1}
+                                onClick={() =>
+                                    setCurrentPage(prev => Math.max(prev - 1, 1))
+                                }
+                            >
+                                ‹
+                            </button>
+
+                            {Array.from(
+                                { length: totalPages },
+                                (_, index) => index + 1
+                            )
+                                .filter(page => {
+                                    return (
+                                        page === 1 ||
+                                        page === totalPages ||
+                                        Math.abs(page - currentPage) <= 1
+                                    );
+                                })
+                                .map((page, index, pages) => {
+
+                                    const previousPage = pages[index - 1];
+
+                                    return (
+                                        <React.Fragment key={page}>
+
+                                            {previousPage &&
+                                                page - previousPage > 1 && (
+                                                    <span className="audit-page-dots">
+                                                        ...
+                                                    </span>
+                                                )}
+
+                                            <button
+                                                type="button"
+                                                className={`audit-page-number ${
+                                                    currentPage === page
+                                                        ? "active"
+                                                        : ""
+                                                }`}
+                                                onClick={() => setCurrentPage(page)}
+                                            >
+                                                {page}
+                                            </button>
+
+                                        </React.Fragment>
+                                    );
+                                })}
+
+                            <button
+                                type="button"
+                                className="audit-page-arrow"
+                                disabled={currentPage === totalPages}
+                                onClick={() =>
+                                    setCurrentPage(prev =>
+                                        Math.min(prev + 1, totalPages)
+                                    )
+                                }
+                            >
+                                ›
+                            </button>
+
+                        </div>
+
+                        <div className="audit-rows-selector">
+
+                            <span>Rows</span>
+
+                            <select
+                                value={rowsPerPage}
+                                onChange={(e) => {
+                                    setRowsPerPage(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                            >
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={30}>30</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </select>
+
+                        </div>
+
+                    </div>
+                )}
             </div>
 
         </div>

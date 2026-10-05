@@ -859,9 +859,6 @@ h4{
     background: #fafbfc;
 }
 
-.custome_table td p {
-    margin: 0;
-}
 
 .custome_table td:nth-child(4) {
     font-weight: 700;
@@ -927,6 +924,147 @@ h4{
 @keyframes auditSpin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+.audit-pagination {
+    width: 100%;
+    min-height: 68px;
+    padding: 14px 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    background: #ffffff;
+    border-top: 1px solid #eeeeee;
+    box-sizing: border-box;
+}
+
+.audit-pagination-info {
+    color: #777;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.audit-pagination-info strong {
+    color: #222;
+    font-weight: 600;
+}
+
+.audit-pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.audit-page-number,
+.audit-page-arrow {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    color: #555;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.audit-page-number:hover:not(.active),
+.audit-page-arrow:hover:not(:disabled) {
+    background: #f6f6f6;
+    border-color: #d8d8d8;
+    color: #111;
+}
+
+.audit-page-number.active {
+    background: #1f2937;
+    border-color: #1f2937;
+    color: #fff;
+}
+
+.audit-page-arrow {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.audit-page-arrow:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.audit-page-dots {
+    width: 28px;
+    text-align: center;
+    color: #999;
+    font-size: 13px;
+}
+
+.audit-rows-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #777;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.audit-rows-selector select {
+    height: 34px;
+    min-width: 65px;
+
+    padding: 0 8px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 7px;
+
+    background: #fff;
+    color: #333;
+
+    outline: none;
+    cursor: pointer;
+}
+
+.audit-rows-selector select:focus {
+    border-color: #bdbdbd;
+}
+
+@media (max-width: 800px) {
+
+    .audit-pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .audit-pagination-info {
+        width: 100%;
+        text-align: center;
+    }
+
+    .audit-pagination-controls {
+        order: 2;
+    }
+
+    .audit-rows-selector {
+        order: 3;
     }
 }
 
