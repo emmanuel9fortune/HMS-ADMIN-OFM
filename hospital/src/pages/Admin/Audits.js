@@ -448,7 +448,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                 }else if(name.includes('consultation')){
                     sectotal += item?.totalPrice
                 }else if(items?.profit === 0 && items?.actualPrice === 0){
-                    frttotal += item?.price * item?.quantity
+                    frttotal += item?.price * item?.quantity                    
                 }else if(items?.profit !== 0 && items?.actualPrice !== 0 && sort === 'consumables'){
                     fiftotal += item?.price * item?.quantity
                 }else if(sort === 'drugs' && item?.day){
@@ -1324,7 +1324,22 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                             <span>Total Amount</span>
 
                             <strong>
-                                {totalFormatted.format(displayTotal || 0)}
+                                {   sort === 'service' ?
+                                    totalFormatted.format(displayTotal || 0)
+                                    : sort === 'cards'
+                                    ? totalFormatted.format(cardTotal || 0)
+                                    : sort === 'consultation'
+                                    ? totalFormatted.format(consultationTotal || 0)
+                                    : sort === 'drugs'
+                                    ? totalFormatted.format(othersTotal || 0)
+                                    : sort === 'utils'
+                                    ? totalFormatted.format(utilsTotal || 0)
+                                    : sort === 'consumables'
+                                    ? totalFormatted.format(consumeTotal || 0)
+                                    : sort === 'drugs'
+                                    ? totalFormatted.format(docTotal || 0)
+                                    : totalFormatted.format(displayTotal || 0)
+                                }
                             </strong>
 
                             <small>
@@ -1674,7 +1689,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                 }, 0)
                                                 : 0;
                                             
-                                                                                        
+                                            // console.log(getBill);
+                                                                
 
                                             if(getcard?.length > 0 && sort === 'cards'){
                                                 return(
@@ -1812,9 +1828,16 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                 ))} 
                                                             </td>
                                                              <td>
-                                                                {parsed?.length && parsed?.map((items, index) => (
-                                                                    <p key={index} style={{margin:'5px 0'}}>{formatted.format(items?.totalPrice)} </p>
-                                                                ))} 
+                                                                {   
+                                                                    parsed?.length && parsed?.map((items, index) => (
+                                                                        <p key={index} style={{margin:'5px 0'}}>
+                                                                            {   items?.price ? 
+                                                                                formatted.format(items?.price * items?.quantity) :
+                                                                                formatted.format(items?.totalPrice)
+                                                                            } 
+                                                                        </p>
+                                                                    ))
+                                                                } 
                                                             </td>
                                                             {/* <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td> */}
                                                             <td><p>{item?.mode}</p></td>
@@ -1919,33 +1942,36 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                 )
                                             }
                                             else{
-                                                return(
-                                                    <tbody key={i}>
-                                                        <tr>
+                                                return null
+                                                // (
+                                                //     <tbody key={i}>
+                                                //         <tr>
 
-                                                            <td>
-                                                                <p>
-                                                                    {timeString}, {`${day}-${month}-${year}`}
-                                                                </p>
-                                                            </td>
+                                                //             <td>
+                                                //                 <p>
+                                                //                     {timeString}, {`${day}-${month}-${year}`}
+                                                //                 </p>
+                                                //             </td>
 
-                                                            <td>
-                                                                <p>
-                                                                    {item?.name || patient?.name}
-                                                                </p>
-                                                            </td>
+                                                //             <td>
+                                                //                 <p>
+                                                //                     {item?.name || patient?.name}
+                                                //                 </p>
+                                                //             </td>
                                                             
-                                                            <td>
-                                                                {parsed?.length && parsed?.map((items, index) => (
-                                                                    <span key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}-{items?.quantity} </span>
-                                                                ))} 
-                                                            </td>
-                                                            <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                            <td><p>{item?.mode}</p></td>
+                                                //             <td>
+                                                //                 {
+                                                //                     parsed?.length > 0 && parsed?.map((items, index) => (
+                                                //                         <span key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}-{items?.quantity} </span>
+                                                //                     )) 
+                                                //                 }
+                                                //             </td>
+                                                //             <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td>
+                                                //             <td><p>{item?.mode}</p></td>
 
-                                                        </tr>
-                                                    </tbody>
-                                                )
+                                                //         </tr>
+                                                //     </tbody>
+                                                // )
                                             }
 
                                                                 
