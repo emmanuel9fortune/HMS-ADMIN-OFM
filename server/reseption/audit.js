@@ -8,13 +8,64 @@ router.post('/', async(req, res) => {
         const eunix = req.body.eunix        
         const sorts = req.body.sorts        
         const mode = req.body.mode        
-        const id = req.body.staff    
+        const id = req.body.staff
+        const { serviceCategory } = req.body;
 
         
         
         const getstaff = await billRequests.find()
         const getstaffID =  getstaff?.length > 0 ? getstaff?.map((itm)=> itm?.staff) : []
         const staffs = await staff.find({_id: {$in: getstaffID}})
+
+        if(sorts === 'service' && !serviceCategory) {
+
+            const bills = await billRequests.find();
+            const serviceNames = new Set();
+
+            for (const bill of bills) {
+                let services;
+
+                try {
+                    services = typeof bill.services === 'string'
+                        ? JSON.parse(bill.services)
+                        : bill.services;
+                } catch (error) {
+                    continue;
+                }
+
+                let items = [];
+
+                if (services && Array.isArray(services.items)) {
+                    items = services.items;
+                } else if (Array.isArray(services)) {
+                    items = services;
+                }
+
+                for (const item of items) {
+                    const name = (
+                        item.name ||
+                        item.testname ||
+                        item.drugs ||
+                        ''
+                    ).trim();
+
+                    if (name) {
+                        serviceNames.add(name);
+                    }
+                }
+            }
+
+            const allServiceNames = [...serviceNames].sort(
+                (a, b) => a.localeCompare(b, undefined, {
+                    sensitivity: 'base'
+                })
+            );
+
+            return res.json({
+                status: 'success',
+                serviceNames: allServiceNames
+            });
+        }
 
         if(sorts === 'lab'){
             if(id){
@@ -365,9 +416,8 @@ router.post('/', async(req, res) => {
                }
             }
 
-        }else if(sorts === 'service') {
+        }else if (serviceCategory) {
 
-            const { serviceCategory } = req.body;
 
             const query = {
                 timeStamp: {
@@ -380,7 +430,6 @@ router.post('/', async(req, res) => {
                 query.mode = mode;
             }
 
-
             // If a specific staff member was selected
             if (id) {
                 query.staff = id;
@@ -388,48 +437,8 @@ router.post('/', async(req, res) => {
 
             const bills = await billRequests.find(query);
 
-            // Your dropdown category -> words/names to search for
-            const categoryMap = {
-                BLOOD: [
-                    'blood'
-                ],
-
-                OXYGEN: [
-                    'oxygen'
-                ],
-
-                PROFESSIONAL: [
-                    'professional fee',
-                    'professional fees'
-                ],
-
-                NURSING: [
-                    'nursing care'
-                ],
-
-                BED: [
-                    'bed fee',
-                    'bed fees'
-                ],
-
-                'DELIVERY FEES': [
-                    'delivery fee',
-                    'delivery fees'
-                ],
-
-                'PROCEDURE FEES': [
-                    'procedure fee',
-                    'Procedure Fee'
-                ],
-
-                discount: [
-                    'discount'
-                ]
-            };
-
-            const searchTerms = categoryMap[serviceCategory] || [];
-
             const results = [];
+            const serviceNames = new Set();
 
             for (const bill of bills) {
 
@@ -445,31 +454,38 @@ router.post('/', async(req, res) => {
 
                 let items = [];
 
-                // Most of your records have:
-                // services: { items: [...] }
+                // Format 1: services = { items: [...] }
                 if (services && Array.isArray(services.items)) {
                     items = services.items;
                 }
 
-                // Some records have:
-                // services: [...]
+                // Format 2: services = [...]
                 else if (Array.isArray(services)) {
                     items = services;
                 }
 
-                // Find matching service items
+                // Extract service names and filter by the selected name
                 const matchingItems = items.filter(item => {
 
-                    const serviceName = (
+                    const name = String(
                         item.name ||
                         item.testname ||
                         item.drugs ||
                         ''
-                    ).toLowerCase().trim();
+                    ).trim();
 
-                    return searchTerms.some(term =>
-                        serviceName.includes(term.toLowerCase())
-                    );
+                    if (!name) {
+                        return false;
+                    }
+
+                    // Automatically collect all unique service names
+                    serviceNames.add(name);
+
+                    // If no service was selected, include all services
+                    // Otherwise, match the selected service name exactly
+                    return !serviceCategory ||
+                        name.toLowerCase() ===
+                        String(serviceCategory).trim().toLowerCase();
                 });
 
                 if (matchingItems.length > 0) {
@@ -492,11 +508,18 @@ router.post('/', async(req, res) => {
                         mode: bill.mode,
                         timeStamp: bill.timeStamp,
 
-                        // Only the requested services
+                        // Only the requested service items
                         services: matchingItems
                     });
                 }
             }
+
+            // Get all discovered service names, sorted alphabetically
+            const allServiceNames = [...serviceNames].sort(
+                (a, b) => a.localeCompare(b, undefined, {
+                    sensitivity: 'base'
+                })
+            );
 
             // Get patients
             const patientIds = results
@@ -522,8 +545,14 @@ router.post('/', async(req, res) => {
 
             return res.json({
                 status: 'success',
-                category: serviceCategory,
+                category: serviceCategory || null,
+
+                // Dynamically discovered service names for your dropdown
+                serviceNames: allServiceNames,
+
+                // Bills matching the selected service
                 bills: results,
+
                 getPatients,
                 getStaffs
             });

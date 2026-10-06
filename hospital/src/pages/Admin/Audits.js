@@ -21,6 +21,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
     const [xdate, setxdate] = useState('')
     const [staffs, setstaffs] = useState([])
     const [staff, setstaff] = useState('')
+    const [serviceNames, setserviceNames] = useState('')
     const [status, setstatus] = useState('PAID')
     
 
@@ -81,11 +82,12 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                     }
 
                     setexpenses(res.data.expense || []);
+                    setserviceNames(res.data.serviceNames || []);
                     setstaffs(res.data.staffs || []);
                     setdebtors(res.data.debtBills || []);
                     setawaiting(res.data.pharmBills || []);
                 }
-                // console.log('Audit data fetched successfully:', res.data);
+                console.log('Audit data fetched successfully:', res.data);
 
             } catch (error) {
                 if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
@@ -682,19 +684,19 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         console.log(status);
         
         if(status === 'PAID'){
-           return generatePaymentReportPDF(getComplete, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income, expense, profit, status);
+           return generatePaymentReportPDF(getComplete, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income, expense, profit, status, displayTotal);
         }
         
         if(status === 'PENDING'){
-           return generatePaymentReportPDF(pending, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income1, expense1, profit1, status);
+           return generatePaymentReportPDF(pending, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income1, expense1, profit1, status, displayTotal);
         }
         
         if(status === 'AWAITING'){
-            return generatePaymentReportPDF(awaiting, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income2, expense2, profit2, status);
+            return generatePaymentReportPDF(awaiting, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, income2, expense2, profit2, status, displayTotal);
         }
         
         if(status === 'DEBTORS'){
-            return generatePaymentReportPDF(debtors, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, totalPrice3, expense2, profit2, status);
+            return generatePaymentReportPDF(debtors, getPatient, sort, totalFormatted, cardTotal, consultationTotal, othersTotal, utilsTotal, consumeTotal, docTotal, churchTotal, totalPrice3, expense2, profit2, status, displayTotal);
         }
     };
     
@@ -734,19 +736,19 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
         discount: 'Discount'
     };
 
-    const serviceNames = {
-        '': 'All Services',
-        drugs: 'Drugs',
-        utils: 'Utilities',
-        consumables: 'Consumables',
-        cards: 'Cards',
-        consultation: 'Consultations',
-        lab: 'Tests',
-        scan: 'Scans',
-        payout: 'Pay Outs',
-        CHURCH: 'Church',
-        service: 'Services'
-    };
+    // const serviceNames = {
+    //     '': 'All Services',
+    //     drugs: 'Drugs',
+    //     utils: 'Utilities',
+    //     consumables: 'Consumables',
+    //     cards: 'Cards',
+    //     consultation: 'Consultations',
+    //     lab: 'Tests',
+    //     scan: 'Scans',
+    //     payout: 'Pay Outs',
+    //     CHURCH: 'Church',
+    //     service: 'Services'
+    // };
 
     const statusNames = {
         PAID: 'Paid',
@@ -1098,7 +1100,7 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
                         {/* MONTH */}
                         <div className="audit-field audit-month-field">
-                            <label>MONTH</label>
+                            {/* <label>MONTH</label> */}
 
                             <MonthAudit
                                 setdebtors={setdebtors}
@@ -1171,13 +1173,13 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
 
 
                         {/* CATEGORY */}
-                        {sort === 'service' && (
+                        {serviceNames?.length > 0 && (
                             <div className="audit-field audit-category-field">
                                 <label>SERVICE CATEGORY</label>
 
                                 <select onChange={handleService1}>
                                     <option value="">ALL CATEGORIES</option>
-                                    <option value="BLOOD">BLOOD SERVICE</option>
+                                    {/* <option value="BLOOD">BLOOD SERVICE</option>
                                     <option value="OXYGEN">OXYGEN SERVICES</option>
                                     <option value="PROFESSIONAL">
                                         PROFESSIONAL FEES
@@ -1190,7 +1192,15 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                     <option value="PROCEDURE FEES">
                                         PROCEDURE FEES
                                     </option>
-                                    <option value="discount">DISCOUNT</option>
+                                    <option value="discount">DISCOUNT</option> */}
+                                    
+                                    {
+                                        serviceNames?.map((service) => (
+                                            <option key={service} value={service}>
+                                                {service}
+                                            </option>
+                                        ))
+                                    }
                                 </select>
                             </div>
                         )}
@@ -1791,18 +1801,28 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                         <tr>
                                                             
                                                             <td><p>{timeString}, {`${day}-${month}-${year}`}</p></td>
-                                                            <td><p>{item?.name || patient?.name}</p></td>
+                                                            <td><p>{item?.name || patient?.name} </p></td>
                                                             <td>
                                                                 {parsed?.length && parsed?.map((items, index) => (
-                                                                    <span key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}, </span>
-                                                                ))}
+                                                                    <span key={index} style={{margin:'5px 0'}}>
+                                                                        {items?.name || items?.drugs} <br/> 
+                                                                        <strong>(Qty-{items?.quantity})</strong> 
+                                                                        <strong>-(Price-{formatted.format(items?.price)})</strong> 
+                                                                    </span>
+                                                                ))} 
                                                             </td>
-                                                            <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td>
+                                                             <td>
+                                                                {parsed?.length && parsed?.map((items, index) => (
+                                                                    <p key={index} style={{margin:'5px 0'}}>{formatted.format(items?.totalPrice)} </p>
+                                                                ))} 
+                                                            </td>
+                                                            {/* <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td> */}
                                                             <td><p>{item?.mode}</p></td>
                                                         </tr>
                                                     </tbody>
                                                 )  
-                                            }else if( sort === 'CHURCH' && selectedServiceItems.length > 0
+                                            }
+                                            else if( sort === 'CHURCH' && selectedServiceItems.length > 0
                                             ){
                                                 return(
                                                     <tbody key={i}>
@@ -1897,7 +1917,8 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                         </tr>
                                                     </tbody>
                                                 )
-                                            }else{
+                                            }
+                                            else{
                                                 return(
                                                     <tbody key={i}>
                                                         <tr>
@@ -1913,18 +1934,14 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                                     {item?.name || patient?.name}
                                                                 </p>
                                                             </td>
-
+                                                            
                                                             <td>
-                                                                {getBill.items?.length && getBill.items?.map((items, index) => (
-                                                                    <p key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}, </p>
-                                                                ))}
+                                                                {parsed?.length && parsed?.map((items, index) => (
+                                                                    <span key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}-{items?.quantity} </span>
+                                                                ))} 
                                                             </td>
-                                                                
                                                             <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td>
-
-                                                            <td>
-                                                                <p>{item?.mode}</p>
-                                                            </td>
+                                                            <td><p>{item?.mode}</p></td>
 
                                                         </tr>
                                                     </tbody>

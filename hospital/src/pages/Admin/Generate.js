@@ -18,7 +18,8 @@ export const generatePaymentReportPDF = (
   income,
   expense,
   profit,
-  status
+  status,
+  displayTotal
 ) => {
   // === Currency formatter (inside or outside, both fine) ===
   const formatted = new Intl.NumberFormat("en-NG", {
@@ -67,6 +68,8 @@ export const generatePaymentReportPDF = (
     doc.text(`Total Income Made ${safeCurrency(consumeTotal)}`, 40, yPos);
   } else if (sortType === "doc") {
     doc.text(`Total Income Made ${safeCurrency(docTotal)}`, 40, yPos);
+  }else if (sortType === "service") {
+    doc.text(`Total Income Made ${safeCurrency(displayTotal)}`, 40, yPos);
   } else {
     // Default totals for all
     if(status !== 'DEBTORS'){
@@ -108,9 +111,9 @@ export const generatePaymentReportPDF = (
                       : item.services;
 
       if (isLab || isScan) {
-        const getTotal = Array.isArray(getBill)
+        const getTotal = Array.isArray(getBill) && !getBill.totalPrice
           ? getBill.reduce((sum, i) => sum + (i.price || 0), 0)
-          : getBill.price || 0;
+          : getBill.totalPrice || getBill.price || 0;
         purpose = Array.isArray(getBill)
           ? getBill.map((i) => i.testname).join(", ")
           : getBill.testname || "";
@@ -119,6 +122,8 @@ export const generatePaymentReportPDF = (
         const getBill = typeof item.services === "string"
                         ? JSON.parse(item.services)
                         : item.services;
+                  // console.log(getBill);
+                  
 
         const getTotal = Array.isArray(getBill)
                           ? getBill.reduce((sum, service) => {
@@ -126,11 +131,14 @@ export const generatePaymentReportPDF = (
 
                               return sum + (Number.isFinite(price) ? price : 0);
                           }, 0): 0;
-        purpose = getBill?.items?.length > 0 ? getBill?.items?.map((x) => x.name || x.drugs).join(", ") : getBill?.map((x) => x.name || x.drugs).join(", ");
-        amount = getBill?.totalPrice || getBill?.items?.[0]?.totalPrice || getTotal || 0;
+        purpose = getBill?.items?.length > 0 ? getBill?.items?.map((x) => x.name + `(Qty-${x?.quantity})` || x.drugs + `(Qty-${x?.quantity})`).join(", ") : getBill?.map((x) => x.name || x.drugs).join(", ");
+        amount = getBill?.totalPrice || getBill[0]?.totalPrice || getTotal || 0;
       }
 
       const mode = status !== 'DEBTORS' ? item?.mode || "" : "";
+
+      // console.log(amount);
+      
 
       if (
         sortType === "" ||
