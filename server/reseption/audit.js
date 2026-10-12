@@ -165,7 +165,7 @@ router.post('/', async(req, res) => {
                 
                 return res.json({staffs, status:'success', pendingBills, paidBlls, getPatients, getStaffs, pharmBills, debtBills})
                 }
-        }else if(sorts === 'utils' || sorts === 'consumables'){
+        } else if(sorts === 'utils' || sorts === 'consumables'){
             if(id){
                 const bills = await billRequests.find(
                     {
@@ -214,7 +214,8 @@ router.post('/', async(req, res) => {
                 
                 return res.json({staffs, status:'success', pendingBills, paidBlls, getPatients, getStaffs, pharmBills, debtBills})
             }
-        }else if(sorts === 'payout'){
+        }
+        else if(sorts === 'payout'){
             if(id){
                 const bills = await billRequests.find(
                     {
@@ -312,7 +313,7 @@ router.post('/', async(req, res) => {
                 
                 return res.json({staffs, status:'success', paidBlls, getPatients, getStaffs, pharmBills, pendingBills, debtBills})
             }
-        }else if(sorts === 'drugs' || sorts === 'consultation' || sorts === 'cards'){
+        }else if(sorts === 'drugs'){
 
             if(sorts === 'drugs'){
                 if(id){
@@ -556,7 +557,159 @@ router.post('/', async(req, res) => {
                 getPatients,
                 getStaffs
             });
-        }else {
+        
+        }else if (sorts === "cards" || sorts === "consultation") {
+            const query = {
+                timeStamp: {
+                    $gte: Number(unix),
+                    $lte: Number(eunix)
+                },
+                mode: mode || { $exists: true }
+            };
+
+            if (id) {
+                query.$or = [
+                    { staff: id },
+                    { staffID: id },
+                    { doctorID: id },
+                    { nurseID: id }
+                ];
+            }
+
+            const bills = await billRequests.find(query).lean();
+
+            // Read services whether stored as a JSON string or an object.
+            const parseServices = (services) => {
+                try {
+                    return typeof services === "string"
+                        ? JSON.parse(services)
+                        : services;
+                } catch {
+                    return null;
+                }
+            };
+
+            // Match only the service category requested.
+            const matchesCategory = (item) => {
+                const name = String(item?.name || "").toLowerCase();
+
+                if (sorts === "cards") {
+                    return name.includes("card");
+                }
+
+                if (sorts === "consultation") {
+                    return name.includes("consultation");
+                }
+
+                return false;
+            };
+
+            // Preserve the original bill and replace only its services field.
+            const filterBillServices = (bill) => {
+                const services = parseServices(bill.services);
+
+                if (!services) return null;
+
+                const items = Array.isArray(services)
+                    ? services
+                    : Array.isArray(services.items)
+                        ? services.items
+                        : [];
+
+                const filteredItems = items.filter(matchesCategory);
+
+                // Exclude bills that do not contain the selected category.
+                if (filteredItems.length === 0) return null;
+
+                const totalPrice = filteredItems.reduce((total, item) => {
+                    const itemTotal =
+                        item.totalPrice != null
+                            ? Number(item.totalPrice)
+                            : Number(item.price || 0) *
+                            Number(item.quantity || 1);
+
+                    return total + (Number.isFinite(itemTotal) ? itemTotal : 0);
+                }, 0);
+
+                let filteredServices;
+
+                if (Array.isArray(services)) {
+                    filteredServices = filteredItems;
+                } else {
+                    filteredServices = {
+                        ...services,
+                        items: filteredItems,
+                        totalPrice
+                    };
+                }
+
+                return {
+                    ...bill,
+                    services: JSON.stringify(filteredServices)
+                };
+            };
+
+            const matchingBills = bills
+                .map(filterBillServices)
+                .filter(Boolean);
+
+            const paidBlls = matchingBills.filter(
+                bill => bill.status === "PAID"
+            );
+
+            const pendingBills = matchingBills.filter(
+                bill => bill.status === "PENDING"
+            );
+
+            const pharmBills = matchingBills.filter(
+                bill => bill.status === "AWAITING"
+            );
+
+            const debtBills = matchingBills.filter(
+                bill => bill.status === "DEBTORS"
+            );
+
+            const patientIDs = [
+                ...new Set(matchingBills.map(bill => bill.uid).filter(Boolean))
+            ];
+
+            const getPatients = await Patient.find({
+                _id: { $in: patientIDs }
+            });
+
+            // Keep your existing expense and staff lookup logic here.
+            const expense = await expenses.find({
+                time: {
+                    $gte: Number(unix),
+                    $lte: Number(eunix)
+                },
+                ...(id ? { staff: id } : {})
+            });
+
+            const staffIDs = [
+                ...new Set([
+                    ...matchingBills.map(bill => bill.staffID || bill.staff),
+                    ...expense.map(item => item.staffID || item.staff)
+                ].filter(Boolean).map(String))
+            ];
+
+            const getStaffs = await staff.find({
+                _id: { $in: staffIDs }
+            });
+
+            return res.json({
+                debtBills,
+                expense,
+                getPatients,
+                paidBlls,
+                pendingBills,
+                pharmBills,
+                staff: getStaffs,
+                staffs,
+                status: "success"
+            });
+        }
+        else {
             if(id){
                 const bills = await billRequests.find(
                     {

@@ -1941,37 +1941,36 @@ function Audits({setenddate1, setdate1, getPending1, setsort1, getPatient1, hand
                                                     </tbody>
                                                 )
                                             }
-                                            else{
-                                                return null
-                                                // (
-                                                //     <tbody key={i}>
-                                                //         <tr>
+                                            else if(!sort){
+                                                return(
+                                                    <tbody key={i}>
+                                                        <tr>
 
-                                                //             <td>
-                                                //                 <p>
-                                                //                     {timeString}, {`${day}-${month}-${year}`}
-                                                //                 </p>
-                                                //             </td>
+                                                            <td>
+                                                                <p>
+                                                                    {timeString}, {`${day}-${month}-${year}`}
+                                                                </p>
+                                                            </td>
 
-                                                //             <td>
-                                                //                 <p>
-                                                //                     {item?.name || patient?.name}
-                                                //                 </p>
-                                                //             </td>
+                                                            <td>
+                                                                <p>
+                                                                    {item?.name || patient?.name}
+                                                                </p>
+                                                            </td>
                                                             
-                                                //             <td>
-                                                //                 {
-                                                //                     parsed?.length > 0 && parsed?.map((items, index) => (
-                                                //                         <span key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}-{items?.quantity} </span>
-                                                //                     )) 
-                                                //                 }
-                                                //             </td>
-                                                //             <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td>
-                                                //             <td><p>{item?.mode}</p></td>
+                                                            <td>
+                                                                {
+                                                                    parsed?.length > 0 && parsed?.map((items, index) => (
+                                                                        <span key={index} style={{margin:'5px 0'}}>{items?.name || items?.drugs}-{items?.quantity} </span>
+                                                                    )) 
+                                                                }
+                                                            </td>
+                                                            <td><p>{!getBill?.totalPrice ? formatted.format(getTotal) : formatted.format(getBill?.totalPrice)}</p></td>
+                                                            <td><p>{item?.mode}</p></td>
 
-                                                //         </tr>
-                                                //     </tbody>
-                                                // )
+                                                        </tr>
+                                                    </tbody>
+                                                )
                                             }
 
                                                                 

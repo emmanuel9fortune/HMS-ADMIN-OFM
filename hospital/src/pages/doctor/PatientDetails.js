@@ -523,6 +523,29 @@ function PatientDetails({handleBack, admin}) {
  
     const [patientIndex, setpatientIndex] = useState(0)
 
+    
+    const [getnotes, setgetnotes] = useState([])
+    const [staff, setstaff] = useState([])
+
+    useEffect(() => {
+        const func=async()=>{
+            try {
+                await axios.post(`http://${cip || 'localhost'}:7700/getClinicalNote`, {uid: uid}).then((res)=>{
+                    // console.log(res);
+                    
+                    if(res.data.status === 'success'){
+                        setgetnotes(res.data.gettingNote)
+                        setstaff(res.data.getStaffDetails)
+                        setreload(0)
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        func()
+    }, [reload, cip, id, uid]);
+
   return (
     <>
         {   
@@ -1258,6 +1281,40 @@ function PatientDetails({handleBack, admin}) {
 
                 
                 <div className='previouse_medicals_textareas_NOTE' >
+
+                    
+                    {
+                        getnotes?.clinicalnote?.length > 0 &&
+                        getnotes?.clinicalnote?.map((note, i)=>{
+                            const getstattName = staff?.find((it)=> it._id === note?.staffID)
+                            
+                            return (
+                                <>
+                                    <h3>Doctor {getstattName?.name}'s Clinical Note</h3>
+                                    <div 
+                                        contentEditable={false}
+                                        suppressContentEditableWarning
+                                        dangerouslySetInnerHTML={{ __html: note?.note }}
+                                        key={i}
+                                        style={{
+                                        border: '1px solid #ccc',
+                                        borderRadius: '5px',
+                                        minHeight: '200px',
+                                        padding: '10px',
+                                        backgroundColor: 'whitesmoke',
+                                        width: '100%',
+                                        overflowY: 'scroll',
+                                        fontSize: '16px',
+                                        whiteSpace: 'pre-wrap',
+                                        height:'700px',
+                                        }}
+                                    >
+                                    </div>
+                                </>
+                        )})
+                    }
+
+                    
                     <div >
                         <h4>CLINICAL NOTES</h4>
                         <textarea placeholder='Enter Clinical Notes'  value={notes} onChange={(e)=>setnotes(e.target.value)} />
