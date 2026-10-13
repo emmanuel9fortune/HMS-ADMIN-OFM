@@ -488,6 +488,7 @@ const billRequest = new mongoose.Schema({
     id : String,
     oid : String,
     staff : String,
+    cashier : String,
 })
 
 const prescribeArray = new mongoose.Schema({

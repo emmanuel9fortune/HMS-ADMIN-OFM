@@ -26,17 +26,6 @@ router.post('/', async(req, res) => {
                 preTime: new Date().getTime(),
                 oid
             })
-            
-            // for(let item of cartItems ){ 
-            //     await util.findOneAndUpdate(
-            //         {
-            //             _id: item.id
-            //         },
-            //         {
-            //             $inc:{quantity: -item.quantity}
-            //         }
-            //     )
-            // }
 
             return res.json({status:'success'})
         }else{
@@ -51,17 +40,6 @@ router.post('/', async(req, res) => {
                 preTime: new Date().getTime(),
                 oid
             })
-
-            // for(let item of cartItems ){ 
-            //     await util.findOneAndUpdate(
-            //         {
-            //             _id: item.id
-            //         },
-            //         { 
-            //             $inc:{quantity: -item.quantity}
-            //         }
-            //     )
-            // }
 
             await prescribes.updateOne(
                 {_id: id},

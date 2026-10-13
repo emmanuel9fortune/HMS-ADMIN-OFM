@@ -10,6 +10,8 @@ router.post('/', async(req, res) => {
         const uid = req.body.uid
         const id = req.body.id
         const docID = req.body.docID
+        const cashier = req.body.cashier
+        const instruction = req.body.instruction
         const services = req.body.services
         const oid = req.body.oid
 
@@ -25,6 +27,8 @@ router.post('/', async(req, res) => {
                 preTime: new Date().getTime(),
                 id,
                 oid,
+                cashier,
+                instruction
             }) 
         }else{ 
             await billRequests.updateOne(
