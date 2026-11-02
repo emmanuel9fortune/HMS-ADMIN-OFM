@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import AdminBar from '../../components/AdminBar'
 import { FaImage } from 'react-icons/fa'
 import { toast } from 'react-toastify'
+import { downloadStaffPDF } from './DownloadStaff'
 
 function AddStaff() {
 
@@ -16,6 +17,8 @@ function AddStaff() {
     const func =async()=>{
       try {
         await axios.post(`http://${cip || 'localhost'}:7700/getStaffs`, {signal: controller.signal }).then((res)=>{
+          // console.log(res);
+          
           if(res.data.status === 'success'){
             
             setstaffs(res.data.staffs)
@@ -30,7 +33,7 @@ function AddStaff() {
     return ()=> controller.abort()
   },[reload, cip])
   
-  console.log(staffs);
+  // console.log(staffs);
 
   const handleDelete =async(id)=>{
     try {
@@ -290,7 +293,14 @@ function AddStaff() {
 
           
             <div className='payment_desk_cart_fields' >
-              <h3>ALL STAFFS</h3>
+              <div style={{width:'100%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+                <h3 style={{flex:1}}>ALL STAFFS</h3>
+
+                <button onClick={() => downloadStaffPDF(staffs)} style={{backgroundColor:'blue', color:'white', padding:'10px 20px', borderRadius:'5px'}} >
+                  Download Staff PDF
+                </button>
+              </div>
+
               <div className='display_all_utilities' style={{position:'relative'}}>
                 {
                   staffs?.length > 0 ?

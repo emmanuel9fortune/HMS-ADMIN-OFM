@@ -124,14 +124,17 @@ export const generatePaymentReportPDF = (
                         : item.services;
                   // console.log(getBill);
                   
-
+        // console.log(getBill);
+        
         const getTotal = Array.isArray(getBill)
                           ? getBill.reduce((sum, service) => {
                               const price = Number(service?.price);
 
                               return sum + (Number.isFinite(price) ? price : 0);
                           }, 0): 0;
-        purpose = getBill?.items?.length > 0 ? getBill?.items?.map((x) => x.name + `(Qty-${x?.quantity})` || x.drugs + `(Qty-${x?.quantity})`).join(", ") : getBill?.map((x) => x.name || x.drugs).join(", ");
+        // purpose = getBill?.items?.length > 0 ? getBill?.items?.map((x) => x.name + `(Qty-${x?.quantity})` || x.drugs + `(Qty-${x?.quantity})`).join(", ") : getBill?.map((x) => x.name || x.drugs).join(", ");
+
+        purpose = getBill?.items?.length > 0 ? getBill?.items?.map((x) => x.name ? x.name + `(Qty-${x?.quantity})` : x.drugs + `(Qty-${x?.quantity})`).join(", ") : null;
         amount = getBill?.totalPrice || getBill[0]?.totalPrice || getTotal || 0;
       }
 
